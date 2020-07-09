@@ -81,6 +81,7 @@ class GUI:
 
         self.viewGrid = tk.IntVar()         #Boolean holding whether the user wants to see gridlines in plot
         self.viewParameters = tk.IntVar()   #Boolean holding whether the user wants to see fitting parameters in plot
+        self.viewResiduals = tk.IntVar()   #Boolean holding whether the user wants to see a residuals plot
 
         self.fitTypeStr = tk.StringVar()    #String holding the the display of function form
 
@@ -136,9 +137,8 @@ class GUI:
         #Relative sizes of each row and column
         for i in range(0,3):
             self.frame3.grid_columnconfigure(i, weight=1)
-        self.frame3.grid_rowconfigure(0, weight=1)
-        self.frame3.grid_rowconfigure(1, weight=1)
-        self.frame3.grid_rowconfigure(2, weight=2) 
+        for i in range(0,3):
+            self.frame3.grid_rowconfigure(i, weight=1)
 
         self.plotTitleLabel = tk.Label(self.frame3, text = 'Plot title: ', background='white')
         self.plotTitleLabel.grid(row=0, rowspan=1, column=0, columnspan=1, sticky='NEWS', padx=5, pady=2)
@@ -163,6 +163,9 @@ class GUI:
 
         self.viewParametersCheckButton = tk.Checkbutton(self.frame3, text="View parameters", variable=self.viewParameters)
         self.viewParametersCheckButton.grid(row=1, rowspan=1, column=2, columnspan=1, sticky='NEWS', padx=5, pady=2)
+
+        self.viewResidualsCheckButton = tk.Checkbutton(self.frame3, text="View residuals", variable=self.viewResiduals)
+        self.viewResidualsCheckButton.grid(row=2, rowspan=1, column=2, columnspan=1, sticky='NEWS', padx=5, pady=2)
 
         ############################################################################
         #                                 FRAMES 4                                 #
@@ -409,7 +412,7 @@ class GUI:
             #Checking if the fit was successful and showing the plot.
             if(self.fitCheck==0):
                 self.fitStatus.set("Fit attempt successful!")
-                fit.plotFitData(self.plotTitleEntry.get(),self.xAxisTitleEntry.get(),self.yAxisTitleEntry.get(),self.viewGrid.get(),self.viewParameters.get())
+                fit.plotFitData(self.plotTitleEntry.get(),self.xAxisTitleEntry.get(),self.yAxisTitleEntry.get(),self.viewGrid.get(),self.viewParameters.get(),self.viewResiduals.get())
             elif(self.fitCheck==1):
                 self.fitStatus.set("Max iterations performed but couldn't find a fit!")
             elif(self.fitCheck==2):
@@ -430,7 +433,7 @@ class GUI:
             #Checking if the fit was successful and showing the plot.
             if(self.fitCheck==0):
                 self.fitStatus.set("Fit attempt successful!")
-                fit.plotFitData(self.plotTitleEntry.get(),self.xAxisTitleEntry.get(),self.yAxisTitleEntry.get(),self.viewGrid.get(),self.viewParameters.get())
+                fit.plotFitData(self.plotTitleEntry.get(),self.xAxisTitleEntry.get(),self.yAxisTitleEntry.get(),self.viewGrid.get(),self.viewParameters.get(),self.viewResiduals.get())
             elif(self.fitCheck==1):
                 self.fitStatus.set("Max iterations performed but couldn't find a fit!")
             elif(self.fitCheck==2):
@@ -480,6 +483,7 @@ class GUI:
         self.yAxisTitleEntry.delete(0, 'end')
         self.viewGrid.set(0) 
         self.viewParameters.set(0)
+        self.viewResiduals.set(0)
         #Frame 4
         self.fitType.set("None")
         self.fitTypeStr.set("")
@@ -494,11 +498,12 @@ class GUI:
     '''
     def help(self):
 
-        self.infoText = 'The curve fitting tool provides the user the ability to browse a .txt or .csv file containing the data set.'\
-        'The file must have 2 columns (no errors along y-axis) or 3 columns (with errors along y-axis), separated by commas or spaces.'\
-        'The user can then choose to plot the raw data or choose a function to fit the data to. The tool has the option for fitting polynomials'\
+        self.infoText = 'The curve fitting tool provides the user the ability to browse a .txt or .csv file containing the data set. '\
+        'The file must have 2 columns (no errors along y-axis) or 3 columns (with errors along y-axis), separated by commas or spaces. '\
+        'The user can then choose to plot the raw data or choose a function to fit the data to. The tool has the option for fitting polynomials '\
         'of degree 0 upto 5 along with some other standard functions. These functions can either be fit automatically or manually by '\
-        'providing an initial guess for the parameters. The user can add plot annotations, grid lines or view the fit parameters as they wish!'\
+        'providing an initial guess for the parameters. The user can add plot annotations, grid lines or view the fit parameters and residuals '\
+        'as they wish!'\
         '\n\nNOTE ON ERRORS:\n'\
         'In case no errors are provided along the y-axis, the error on the parameters and the chi-squared value are calculated based on an error '\
         'of 1.00 (arbitrary unit) on each data point. Due to this, the errors on the fitting parameters dont have much meaning; however the '\
