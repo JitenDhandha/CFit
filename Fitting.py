@@ -603,10 +603,12 @@ yTitle - string holding the label for the y axis
 viewGrid - boolean holding whether the user wants the plot to have gridlines
 viewParameters - boolean holding whether the user wants to see the fitting
 parameters
+viewResiduals - boolean holding whether the user wants to see the residuals
+plot
 @Return value:
 --
 '''    
-def plotFitData(plotTitle,xTitle,yTitle,viewGrid,viewParameters):
+def plotFitData(plotTitle,xTitle,yTitle,viewGrid,viewParameters,viewResiduals):
 
     #Access to global variables
     global x
@@ -622,11 +624,17 @@ def plotFitData(plotTitle,xTitle,yTitle,viewGrid,viewParameters):
     global redChiSquared
     global redChiSquaredLimits
 
-    #Creating figure
+    #Creating figure and adding subplots
     figure2 = plt.figure()
-    axes2 = figure2.add_subplot(111)
 
-    #Creating figure and adding subplot
+    if(not viewResiduals):
+        axes2 = figure2.add_subplot(111)
+    else:
+        gs = figure2.add_gridspec(ncols=1, nrows=2, height_ratios=[3, 1])
+        axes2 = figure2.add_subplot(gs[0])
+        axes3 = figure2.add_subplot(gs[1])
+
+    #Setting axes titles
     axes2.set_title(plotTitle, fontsize='x-large')
     axes2.set_xlabel(xTitle, fontsize='large')
     axes2.set_ylabel(yTitle, fontsize='large')
@@ -637,17 +645,31 @@ def plotFitData(plotTitle,xTitle,yTitle,viewGrid,viewParameters):
         axes2.set_axisbelow(True)
         axes2.grid(b=True, which='major', alpha=0.5)
         axes2.grid(b=True, which='minor', alpha=0.2)
+        if(viewResiduals):
+            axes3.minorticks_on()
+            axes3.set_axisbelow(True)
+            axes3.grid(b=True, which='major', alpha=0.5)
+            axes3.grid(b=True, which='minor', alpha=0.2)
 
     #Plotting the raw data
     if(ERR==True):
         axes2.errorbar(x,y,y_err, fmt='.', color='midnightblue', ecolor='royalblue', capsize=2, zorder=1, label='Data')
     else:
         axes2.scatter(x,y,color='midnightblue', label='Data')
-
+    
     #Plotting the best fit
     xx = np.linspace(min(x),max(x),1000)
     yy = functions[function](xx,*fitParameters)
     axes2.plot(xx,yy,color='darkorange', zorder=2, label='Fit function')
+
+    #Plotting the residuals
+    if(viewResiduals):
+        residuals = functions[function](x,*fitParameters) - y
+        axes3.axhline(0,color='darkorange', zorder=2)
+        if(ERR==True):
+            axes3.errorbar(x,residuals,y_err,fmt='.', color='midnightblue', ecolor='royalblue', capsize=2, zorder=1)
+        else:
+            axes3.scatter(x,residuals,color='midnightblue')
 
     #Adding legend to the plot
     axes2.legend(markerscale=2, fontsize='large')
