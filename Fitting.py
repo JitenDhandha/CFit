@@ -1,6 +1,6 @@
 ####################################################################################
 # Jiten Dhandha, 2020                                                              #
-# CFit is a curve fitting tool in python based on the method of least squares.     #
+# CFit is a curve fitting tool in python, based on the method of least squares.    #
 # It comes equipped with some standard functions and a graphical user interface.   #
 #                                                                                  #
 # Inspired by: LSFR.py, Abie Marshall, The University of Manchester, 2016          #
