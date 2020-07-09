@@ -1,7 +1,7 @@
 ####################################################################################
 # Jiten Dhandha, 2020                                                              #
-# CFit is a curve fitting tool in python equipped with some standard functions and #
-# and a graphical user interface.                                                  #
+# CFit is a curve fitting tool in python, based on the method of least squares.    #
+# It comes equipped with some standard functions and a graphical user interface.   #
 #                                                                                  #
 # Inspired by: LSFR.py, Abie Marshall, The University of Manchester, 2016          #
 ####################################################################################
@@ -494,10 +494,11 @@ class GUI:
     '''
     def help(self):
 
-        self.infoText = 'The curve fitting tool provides the user the ability to input a .txt or .csv file having 2 columns '\
-        '(no errors along y-axis) or 3 columns (with errors along y-axis), separated by a commas or spaces. The user can then choose the function '\
-        'they want to fit to the data. The tool has the option for fitting polynomials of degree 0 upto 5 and also some custom functions. '\
-        'These functions can either be fit automatically or manually by providing an initial guess for the parameters.'\
+        self.infoText = 'The curve fitting tool provides the user the ability to browse a .txt or .csv file containing the data set.'\
+        'The file must have 2 columns (no errors along y-axis) or 3 columns (with errors along y-axis), separated by commas or spaces.'\
+        'The user can then choose to plot the raw data or choose a function to fit the data to. The tool has the option for fitting polynomials'\
+        'of degree 0 upto 5 along with some other standard functions. These functions can either be fit automatically or manually by '\
+        'providing an initial guess for the parameters. The user can add plot annotations, grid lines or view the fit parameters as they wish!'\
         '\n\nNOTE ON ERRORS:\n'\
         'In case no errors are provided along the y-axis, the error on the parameters and the chi-squared value are calculated based on an error '\
         'of 1.00 (arbitrary unit) on each data point. Due to this, the errors on the fitting parameters dont have much meaning; however the '\
