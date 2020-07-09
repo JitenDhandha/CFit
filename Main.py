@@ -511,7 +511,7 @@ class GUI:
     '''
     def about(self):
 
-        self.aboutText = 'CFit (Curve fitting Tool)\n\u00A9 2020 Jiten Dhandha\nSchool Of Physics and Astronomy\nThe University of Mancheter'
+        self.aboutText = 'CFit (Curve fitting Tool)\n\u00A9 2020 Jiten Dhandha\nSchool Of Physics and Astronomy\nThe University of Manchester'
         messagebox.showinfo('About', self.aboutText)
 
     '''
