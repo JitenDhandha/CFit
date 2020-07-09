@@ -1,6 +1,8 @@
 # CFit
 CFit is a curve fitting tool in python, based on the method of least squares. It comes equipped with some standard functions and a graphical user interface.
 
+<img src="https://github.com/JitenDhandha/CFit/blob/master/CFit.png" width="25%" height="25%">
+
 ## Installation
 - Click the drop down menu titled 'Code' at the top right of the window and select 'Download zip'.
 - Save this zip file wherever you want the curve fitting tool to be.
