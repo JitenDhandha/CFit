@@ -14,6 +14,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import gridspec
 import scipy.optimize as opt
 import scipy.special as sp
 import scipy.stats as stats
@@ -538,7 +539,6 @@ def fitFunction(iniParameters):
 
     #Filling in the fit parameters and errors on them (from the covariance matrix)
     fitParameters = fitStructure[0]
-    print(fitStructure[1])
     fitErrors = np.sqrt(np.diag(fitStructure[1]))
 
     #Quantizing the goodness of fit
@@ -626,13 +626,21 @@ def plotFitData(plotTitle,xTitle,yTitle,viewGrid,viewParameters,viewResiduals):
 
     #Creating figure and adding subplots
     figure2 = plt.figure()
-
-    if(not viewResiduals):
-        axes2 = figure2.add_subplot(111)
-    else:
-        gs = figure2.add_gridspec(ncols=1, nrows=2, height_ratios=[3, 1])
+    if(viewResiduals and viewParameters):
+        gs = gridspec.GridSpec(2, 2, height_ratios=[3, 1], width_ratios=[4,1]) 
+        axes2 = figure2.add_subplot(gs[0,0])
+        axes3 = figure2.add_subplot(gs[1,0])
+        axes4 = figure2.add_subplot(gs[0,1])
+    elif(viewResiduals and not viewParameters):
+        gs = gridspec.GridSpec(2, 1, height_ratios=[3, 1]) 
         axes2 = figure2.add_subplot(gs[0])
         axes3 = figure2.add_subplot(gs[1])
+    elif(not viewResiduals and viewParameters):
+        gs = gridspec.GridSpec(1, 2, width_ratios=[4, 1])
+        axes2 = figure2.add_subplot(gs[0])
+        axes4 = figure2.add_subplot(gs[1])    
+    else:
+        axes2 = figure2.add_subplot(111)
 
     #Setting axes titles
     axes2.set_title(plotTitle, fontsize='x-large')
@@ -677,8 +685,8 @@ def plotFitData(plotTitle,xTitle,yTitle,viewGrid,viewParameters,viewResiduals):
     #Displaying fit parameters if the user wants
     if(viewParameters):
 
-        #Shifting plot to the left to fit the parameters box
-        figure2.subplots_adjust(right=0.8)
+        #Removing x and y axis
+        axes4.set_axis_off()
 
         #Declaring the string array that holds everything displayed in the parameters box
         parametersStr = []
@@ -792,8 +800,8 @@ def plotFitData(plotTitle,xTitle,yTitle,viewGrid,viewParameters,viewResiduals):
         parametersStr = '\n'.join(parametersStr)
 
         #Placing the parameters box in the plot
-        axes2.text(1.015,0.985, parametersStr, bbox=dict(boxstyle="square", fc="lemonchiffon", ec="darkorange", pad=0.5), 
-            va='top', ha='left', fontsize='large', linespacing=1.3, transform =axes2.transAxes)
+        axes4.text(-0.35,1.0,parametersStr, bbox=dict(boxstyle="square", fc="lemonchiffon", ec="darkorange", pad=0.5),
+            va='top', ha='left', fontsize='large', linespacing=1.3)
 
     #Displaying the beauty
     figure2.show()
