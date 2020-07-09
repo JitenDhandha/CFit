@@ -242,13 +242,19 @@ def guessParameters():
         iniParameters = np.polyfit(x,y,deg=order,w=1/y_err)
         return fitFunction(iniParameters)
 
-
     elif(function=='Sine wave'):
 
         y0_bound = (ymin+2/5*abs(ymax-ymin),ymax-2/5*abs(ymax-ymin))
         A_bound = (abs(2*(ymax-ymin))/3,abs(ymax-ymin)/3)
-        omg_bound = (2*0.5*np.pi/(xmax-xmin),2*100*np.pi/abs(xmax-xmin))
         phi_bound = (0,2*np.pi)
+
+        sorted_k_args = np.argsort(np.fft.rfft(y))
+        sorted_f = np.fft.fftfreq(len(x), x[1]-x[0])[sorted_k_args]
+        if(sorted_f[-1]!=0):
+            guess_f = sorted_f[-1]
+        else:
+            guess_f = sorted_f[-2]
+        omg_bound = (0.5*(2*np.pi)*guess_f,2*(2*np.pi)*guess_f)
 
         BOUNDS = [y0_bound, A_bound, omg_bound, phi_bound]
 
@@ -256,8 +262,15 @@ def guessParameters():
 
         y0_bound = (ymin+2/5*abs(ymax-ymin),ymax-2/5*abs(ymax-ymin))
         A_bound = (abs(2*(ymax-ymin))/3,abs(ymax-ymin)/3)
-        omg_bound = (2*1*np.pi/(xmax-xmin),2*100*np.pi/abs(xmax-xmin))
         phi_bound = (0,2*np.pi)
+
+        sorted_k_args = np.argsort(np.fft.rfft(y))
+        sorted_f = np.fft.fftfreq(len(x), x[1]-x[0])[sorted_k_args]
+        if(sorted_f[-1]!=0):
+            guess_f = sorted_f[-1]
+        else:
+            guess_f = sorted_f[-2]
+        omg_bound = (0.5*(2*np.pi)*guess_f,2*(2*np.pi)*guess_f)
 
         BOUNDS = [y0_bound, A_bound, omg_bound, phi_bound]
 
