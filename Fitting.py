@@ -771,9 +771,6 @@ def plotFitData(plotTitle,xTitle,yTitle,viewGrid,viewParameters,viewResiduals):
         parametersStr.append(r"$\bf{Fitting\/parameters:}$")
         for i in range(numberOfParameters):
             parametersStr.append(listOfParams[i]+r' = {0:.5e} $\pm$ {1:.5e}'.format(fitParameters[i],fitErrors[i]))
-            #For testing
-            print(listOfParams[i][1]+' = {0} ± {1}'.format(fitParameters[i],fitErrors[i]))
-        print('χr^2 = {0:.5e}'.format(redChiSquared))          
 
         #Adding some additional fitting details to the parameters box
         parametersStr.append("")
