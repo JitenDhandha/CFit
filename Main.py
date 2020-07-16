@@ -349,7 +349,7 @@ class GUI:
             self.fitDataManEntry.insert(0, 'y\u2080=1, A=1, \u03BB=1')
 
         elif(self.fitType.get()=='Laplacian'):
-            self.fitTypeStr.set('y = y\u2080 + A/(2b) \u00D7 e^(-|(x-\u03BC)|/2b)')
+            self.fitTypeStr.set('y = y\u2080 + A/(2b) \u00D7 e^(-|(x-\u03BC)|/b)')
             self.fitDataManEntry.delete(0,'end')
             self.fitDataManEntry.insert(0, 'y\u2080=1, A=1, \u03BC=1, b=1')
 
