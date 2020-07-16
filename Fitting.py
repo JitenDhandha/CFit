@@ -285,7 +285,7 @@ def guessParameters():
             y0_bound = (ymin+abs(ymin),ymin-9*abs(ymin))
             A_bound = (0,5*abs(ymax-ymin)*3*std)
             mu_bound = (mean-abs(mean),mean+abs(mean))
-            omg_bound = (0,3*std)
+            omg_bound = (0,2*std)
 
         else:
             mean = x[np.argmin(y)]
@@ -294,7 +294,7 @@ def guessParameters():
             y0_bound = (ymax+abs(ymax),ymax+9*abs(ymax))
             A_bound = (0,-5*abs(ymax-ymin)*3*std)
             mu_bound = (mean-abs(mean),mean+abs(mean))
-            omg_bound = (0,3*std)           
+            omg_bound = (0,2*std)           
 
         BOUNDS = [y0_bound, A_bound, mu_bound, omg_bound]
         
@@ -311,27 +311,14 @@ def guessParameters():
     elif(function=='Laplacian'):
 
         mean = x[np.argmax(y)]
-
-        b_arr = []
-        for i in range(numberOfDataPoints-1):
-            if(y[i+1]==y[i]):
-                continue
-            else:
-                if(x[i]<mean):
-                    temp = (y[i]-ymin)*(x[i+1]-x[i])/(y[i+1]-y[i])
-                else:
-                    temp = (y[i]-ymin)*(x[i+1]-x[i])/(y[i+1]-y[i])
-                b_arr.append(temp)
-        hist, edges = np.histogram(b_arr, bins=int(len(b_arr)/5))
-        b_est = (edges[np.argmax(hist)] + edges[np.argmax(hist)+1])/2
+        std = abs(x[np.argmax(y)]-x[np.argmin(y)])
 
         y0_bound = (ymin+abs(ymin),ymin-9*abs(ymin))
-        A_bound = (0,5*2*b_est*abs(ymax-ymin))
+        A_bound = (0,5*2*std*abs(ymax-ymin))
         mu_bound = (mean-abs(mean),mean+abs(mean)) 
-        b_bound = (b_est-abs(b_est),b_est+abs(b_est))
+        b_bound = (0,2*std)
 
         BOUNDS = [y0_bound, A_bound, mu_bound, b_bound]
-        print(BOUNDS)
         
     elif(function=='Lorentzian'):
 
@@ -341,7 +328,7 @@ def guessParameters():
         y0_bound = (ymin+abs(ymin),ymin-9*abs(ymin))
         A_bound = (0,10*abs(ymax-ymin))
         x0_bound = (mean-abs(mean),mean+abs(mean))
-        omg_bound = (0,3*std)
+        omg_bound = (0,2*std)
 
         BOUNDS = [y0_bound, A_bound, x0_bound, omg_bound]
 
