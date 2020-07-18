@@ -117,12 +117,13 @@ def readFile(fileLocation):
     #Trying to populate the data array from the file (allows both spaces and commas)
     try:
         with open(fileLocation, 'r') as file:
-            clean_lines = (' '.join(line.split()) for line in file)
-            clean_lines = (line.replace(' ',',') for line in clean_lines)
+            clean_lines = [' '.join(line.split()) for line in file]
+            for delims in [(' ,',','),(', ',','),(' ',',')]:
+                clean_lines = [line.replace(*delims) for line in clean_lines]
             data = np.genfromtxt(clean_lines, delimiter=',',dtype='float_')
     except (TypeError, ValueError, AttributeError):
         return 3
-    
+
     #Checking if the data array has 2 or 3 columns
     try:
         if(not len(data[0])==2 and not len(data[0])==3):
@@ -276,59 +277,56 @@ def guessParameters():
 
     elif(function=='Gaussian'):
 
+        mean = np.average(x, weights=y)
+        std = np.sqrt(np.average((x-mean)**2, weights=y))
+        
+        mu_bound = (mean-0.5*abs(mean),mean+0.5*abs(mean))
+        omg_bound = (std-abs(std),std+abs(std))
+        
         concavity = True if sum(np.array([(y[-1]-i)<0 for i in y]))>int(len(y)/2) else False
-
+        
         if(concavity):
-            mean = x[np.argmax(y)]
-            std = abs(x[np.argmax(y)]-x[np.argmin(y)])
 
-            y0_bound = (ymin+abs(ymin),ymin-9*abs(ymin))
+            y0_bound = (ymin+abs(ymin),ymin-6*abs(ymin))
             A_bound = (0,5*abs(ymax-ymin)*3*std)
-            mu_bound = (mean-abs(mean),mean+abs(mean))
-            omg_bound = (0,2*std)
-
         else:
-            mean = x[np.argmin(y)]
-            std = abs(x[np.argmax(y)]-x[np.argmin(y)])
 
-            y0_bound = (ymax+abs(ymax),ymax+9*abs(ymax))
-            A_bound = (0,-5*abs(ymax-ymin)*3*std)
-            mu_bound = (mean-abs(mean),mean+abs(mean))
-            omg_bound = (0,2*std)           
+            y0_bound = (ymax+abs(ymax),ymax+6*abs(ymax))
+            A_bound = (0,-5*abs(ymax-ymin)*3*std)      
 
         BOUNDS = [y0_bound, A_bound, mu_bound, omg_bound]
         
     elif(function=='Poisson'):
 
-        mean = x[np.argmax(y)]
+        mean = np.average(x, weights=y)
 
-        y0_bound = (ymin+abs(ymin),ymin-9*abs(ymin))
+        y0_bound = (ymin+abs(ymin),ymin-6*abs(ymin))
         A_bound = (0,5*abs(ymax-ymin))
-        lmd_bound = (mean-abs(mean),mean+abs(mean))
+        lmd_bound = (mean-0.5*abs(mean),mean+0.5*abs(mean)) 
 
-        BOUNDS = [y0_bound, A_bound, lmd_bound]       
+        BOUNDS = [y0_bound, A_bound, lmd_bound]
 
     elif(function=='Laplacian'):
 
-        mean = x[np.argmax(y)]
-        std = abs(x[np.argmax(y)]-x[np.argmin(y)])
+        mean = np.average(x, weights=y)
+        std = np.sqrt(np.average((x-mean)**2, weights=y))
 
-        y0_bound = (ymin+abs(ymin),ymin-9*abs(ymin))
+        y0_bound = (ymin+abs(ymin),ymin-6*abs(ymin))
         A_bound = (0,5*2*std*abs(ymax-ymin))
-        mu_bound = (mean-abs(mean),mean+abs(mean)) 
-        b_bound = (0,2*std)
+        mu_bound = (mean-0.5*abs(mean),mean+0.5*abs(mean)) 
+        b_bound = (std-abs(std),std+abs(std))
 
         BOUNDS = [y0_bound, A_bound, mu_bound, b_bound]
         
     elif(function=='Lorentzian'):
 
-        mean = x[np.argmax(y)]
-        std = abs(x[np.argmax(y)]-x[np.argmin(y)]) 
+        mean = np.average(x, weights=y)
+        std = np.sqrt(np.average((x-mean)**2, weights=y))
 
-        y0_bound = (ymin+abs(ymin),ymin-9*abs(ymin))
-        A_bound = (0,10*abs(ymax-ymin))
-        x0_bound = (mean-abs(mean),mean+abs(mean))
-        omg_bound = (0,2*std)
+        y0_bound = (ymin+abs(ymin),ymin-6*abs(ymin))
+        A_bound = (0,5*np.pi/2*abs(ymax-ymin))
+        x0_bound = (mean-0.5*abs(mean),mean+0.5*abs(mean))
+        omg_bound = (std-abs(std),std+abs(std))
 
         BOUNDS = [y0_bound, A_bound, x0_bound, omg_bound]
 
@@ -339,13 +337,12 @@ def guessParameters():
 
         with warnings.catch_warnings():
             warnings.filterwarnings('ignore')
-            b_est, logA_est = np.polyfit(lX,lY,deg=1)
-            
+            b_est, logA_est = np.polyfit(lX,lY,w=np.exp(lX),deg=1)
         A_est = np.exp(logA_est)
 
         A_bound = (-A_est,A_est)
         b_bound = (b_est-0.5*abs(b_est),b_est+0.5*abs(b_est))
-        
+
         BOUNDS = [A_bound,b_bound]
 
     elif(function=='Exponential growth'):
