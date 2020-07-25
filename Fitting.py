@@ -283,7 +283,7 @@ def guessParameters():
         mu_bound = (mean-0.5*abs(mean),mean+0.5*abs(mean))
         omg_bound = (std-abs(std),std+abs(std))
         
-        concavity = True if sum(np.array([(y[-1]-i)<0 for i in y]))>int(len(y)/2) else False
+        concavity = True if np.mean(y)<y[np.argmin(abs(x-mean))] else False
         
         if(concavity):
 
