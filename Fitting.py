@@ -277,56 +277,54 @@ def guessParameters():
 
     elif(function=='Gaussian'):
 
-        mean = np.average(x, weights=y)
-        std = np.sqrt(np.average((x-mean)**2, weights=y))
+        xrange = xmax - xmin
         
-        mu_bound = (mean-0.5*abs(mean),mean+0.5*abs(mean))
-        omg_bound = (std-abs(std),std+abs(std))
+        mu_bound = (xmin-xrange,xmax+xrange)
+        omg_bound = (0,xrange)
         
-        concavity = True if np.mean(y)<y[np.argmin(abs(x-mean))] else False
+        concavity = True if np.average(np.diff(np.diff(y)))>0 else False
         
         if(concavity):
 
             y0_bound = (ymin+abs(ymin),ymin-6*abs(ymin))
-            A_bound = (0,5*abs(ymax-ymin)*3*std)
+            A_bound = (0,5*abs(ymax-ymin)*3*xrange)
         else:
 
             y0_bound = (ymax+abs(ymax),ymax+6*abs(ymax))
-            A_bound = (0,-5*abs(ymax-ymin)*3*std)      
-
+            A_bound = (0,-5*abs(ymax-ymin)*3*xrange)     
+        
         BOUNDS = [y0_bound, A_bound, mu_bound, omg_bound]
+        print(BOUNDS)
         
     elif(function=='Poisson'):
 
-        mean = np.average(x, weights=y)
+        xrange = xmax - xmin
 
         y0_bound = (ymin+abs(ymin),ymin-6*abs(ymin))
         A_bound = (0,5*abs(ymax-ymin))
-        lmd_bound = (mean-0.5*abs(mean),mean+0.5*abs(mean)) 
+        lmd_bound = (xmin-xrange,xmax+xrange)
 
         BOUNDS = [y0_bound, A_bound, lmd_bound]
 
     elif(function=='Laplacian'):
-
-        mean = np.average(x, weights=y)
-        std = np.sqrt(np.average((x-mean)**2, weights=y))
+        
+        xrange = xmax - xmin
 
         y0_bound = (ymin+abs(ymin),ymin-6*abs(ymin))
-        A_bound = (0,5*2*std*abs(ymax-ymin))
-        mu_bound = (mean-0.5*abs(mean),mean+0.5*abs(mean)) 
-        b_bound = (std-abs(std),std+abs(std))
+        A_bound = (0,5*2*xrange*abs(ymax-ymin))
+        mu_bound = (xmin-xrange,xmax+xrange)
+        b_bound = (0,xrange)
 
         BOUNDS = [y0_bound, A_bound, mu_bound, b_bound]
         
     elif(function=='Lorentzian'):
 
-        mean = np.average(x, weights=y)
-        std = np.sqrt(np.average((x-mean)**2, weights=y))
+        xrange = xmax - xmin
 
         y0_bound = (ymin+abs(ymin),ymin-6*abs(ymin))
         A_bound = (0,5*np.pi/2*abs(ymax-ymin))
-        x0_bound = (mean-0.5*abs(mean),mean+0.5*abs(mean))
-        omg_bound = (std-abs(std),std+abs(std))
+        x0_bound = (xmin-xrange,xmax+xrange)
+        omg_bound = (0,xrange)
 
         BOUNDS = [y0_bound, A_bound, x0_bound, omg_bound]
 
