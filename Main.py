@@ -374,7 +374,7 @@ class GUI:
             self.fitDataManEntry.insert(0, 'y\u2080=1, A=1, t=1')
 
         elif(self.fitType.get()=='Logarithm'):
-            self.fitTypeStr.set('y = A log(x-x\u2080)')
+            self.fitTypeStr.set('y = y\u2080 + A log(x-x\u2080)')
             self.fitDataManEntry.delete(0,'end')
             self.fitDataManEntry.insert(0, 'y\u2080=1, A=1, x\u2080=1')
 
