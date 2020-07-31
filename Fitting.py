@@ -294,7 +294,6 @@ def guessParameters():
             A_bound = (0,-5*abs(ymax-ymin)*3*xrange)     
         
         BOUNDS = [y0_bound, A_bound, mu_bound, omg_bound]
-        print(BOUNDS)
         
     elif(function=='Poisson'):
 
