@@ -245,85 +245,156 @@ def guessParameters():
 
     elif(function=='Sine wave'):
 
-        y0_bound = (ymin+2/5*abs(ymax-ymin),ymax-2/5*abs(ymax-ymin))
-        A_bound = (abs(2*(ymax-ymin))/3,abs(ymax-ymin)/3)
+        x_range = xmax - xmin
+        y_range = ymax - ymin
+
+        y0_bound = (ymin+2/5*abs(y_range),ymax-2/5*abs(y_range))
+        A_bound = (abs(y_range)/3,2*abs(y_range)/3)
         phi_bound = (0,2*np.pi)
 
-        sorted_k_args = np.argsort(np.fft.rfft(y))
-        sorted_f = np.fft.fftfreq(len(x), x[1]-x[0])[sorted_k_args]
-        if(sorted_f[-1]!=0):
-            guess_f = sorted_f[-1]
-        else:
-            guess_f = sorted_f[-2]
+        y_avg = np.average(y)
+        y_std = np.std(y)
+        yscaled = []
+        for i in y:
+            if(i>y_avg+y_std):
+                yscaled.append(1)
+            elif(i<y_avg-y_std):
+                yscaled.append(-1)
+            else:
+                yscaled.append(0)
+        flag = yscaled[0]
+        crossings = 0
+        for i in yscaled:
+            if(i==0):
+                continue
+            if(flag==0):
+                flag=i
+            elif(i==-flag):
+                flag = -flag
+                crossings+=1
+        crossings = crossings/2
+        guess_f = crossings/x_range
+
         omg_bound = (0.5*(2*np.pi)*guess_f,2*(2*np.pi)*guess_f)
 
         BOUNDS = [y0_bound, A_bound, omg_bound, phi_bound]
 
     elif(function=='Square wave'):
 
-        y0_bound = (ymin+2/5*abs(ymax-ymin),ymax-2/5*abs(ymax-ymin))
-        A_bound = (abs(2*(ymax-ymin))/3,abs(ymax-ymin)/3)
+        x_range = xmax - xmin
+        y_range = ymax - ymin
+
+        y0_bound = (ymin+2/5*abs(y_range),ymax-2/5*abs(y_range))
+        A_bound = (abs(y_range)/3,2*abs(y_range)/3)
         phi_bound = (0,2*np.pi)
 
-        sorted_k_args = np.argsort(np.fft.rfft(y))
-        sorted_f = np.fft.fftfreq(len(x), x[1]-x[0])[sorted_k_args]
-        if(sorted_f[-1]!=0):
-            guess_f = sorted_f[-1]
-        else:
-            guess_f = sorted_f[-2]
+        y_avg = np.average(y)
+        y_std = np.std(y)
+        yscaled = []
+        for i in y:
+            if(i>y_avg+y_std):
+                yscaled.append(1)
+            elif(i<y_avg-y_std):
+                yscaled.append(-1)
+            else:
+                yscaled.append(0)
+        flag = yscaled[0]
+        crossings = 0
+        for i in yscaled:
+            if(i==0):
+                continue
+            if(flag==0):
+                flag=i
+            elif(i==-flag):
+                flag = -flag
+                crossings+=1
+        crossings = crossings/2
+        guess_f = crossings/x_range
+
         omg_bound = (0.5*(2*np.pi)*guess_f,2*(2*np.pi)*guess_f)
 
         BOUNDS = [y0_bound, A_bound, omg_bound, phi_bound]
 
     elif(function=='Gaussian'):
 
-        xrange = xmax - xmin
+        x_range = xmax - xmin
+        y_range = ymax - ymin
         
-        mu_bound = (xmin-xrange,xmax+xrange)
-        omg_bound = (0,xrange)
-        
-        concavity = True if np.average(np.diff(np.diff(y)))>0 else False
-        
-        if(concavity):
+        mu_bound = (xmin-x_range,xmax+x_range)
+        omg_bound = (0,x_range)
 
-            y0_bound = (ymin+abs(ymin),ymin-6*abs(ymin))
-            A_bound = (0,5*abs(ymax-ymin)*3*xrange)
+        y_med = np.median(y)
+        y_avg = np.average(y)
+        up = True if y_avg>=y_med else False
+
+        if(up):
+            A_bound = (0,2*abs(y_range)*2.5*x_range)
+            y0_bound = (ymin-y_range,ymin+y_range/2)
         else:
-
-            y0_bound = (ymax+abs(ymax),ymax+6*abs(ymax))
-            A_bound = (0,-5*abs(ymax-ymin)*3*xrange)     
+            A_bound = (0,-2*abs(y_range)*2.5*x_range)
+            y0_bound = (ymax-y_range/2,ymin+y_range)
         
         BOUNDS = [y0_bound, A_bound, mu_bound, omg_bound]
         
     elif(function=='Poisson'):
 
-        xrange = xmax - xmin
+        x_range = xmax - xmin
+        y_range = ymax - ymin
 
-        y0_bound = (ymin+abs(ymin),ymin-6*abs(ymin))
-        A_bound = (0,5*abs(ymax-ymin))
-        lmd_bound = (xmin-xrange,xmax+xrange)
+        lmd_bound = (max(0,xmin-x_range),xmax+x_range)
+
+        y_med = np.median(y)
+        y_avg = np.average(y)
+        up = True if y_avg>=y_med else False
+
+        if(up):
+            A_bound = (0,2*abs(y_range))
+            y0_bound = (ymin-y_range,ymin+y_range/2)
+        else:
+            A_bound = (0,-2*abs(y_range))
+            y0_bound = (ymax-y_range/2,ymin+y_range)
 
         BOUNDS = [y0_bound, A_bound, lmd_bound]
 
     elif(function=='Laplacian'):
         
-        xrange = xmax - xmin
+        x_range = xmax - xmin
+        y_range = ymax - ymin
 
-        y0_bound = (ymin+abs(ymin),ymin-6*abs(ymin))
-        A_bound = (0,5*2*xrange*abs(ymax-ymin))
-        mu_bound = (xmin-xrange,xmax+xrange)
-        b_bound = (0,xrange)
+        mu_bound = (xmin-x_range,xmax+x_range)
+        b_bound = (0,x_range)
+
+        y_med = np.median(y)
+        y_avg = np.average(y)
+        up = True if y_avg>=y_med else False
+
+        if(up):
+            A_bound = (0,2*abs(y_range)*2*x_range)
+            y0_bound = (ymin-y_range,ymin+y_range/2)
+        else:
+            A_bound = (0,-2*abs(y_range)*2*x_range)
+            y0_bound = (ymax-y_range/2,ymin+y_range)
 
         BOUNDS = [y0_bound, A_bound, mu_bound, b_bound]
         
     elif(function=='Lorentzian'):
 
-        xrange = xmax - xmin
+        x_range = xmax - xmin
+        y_range = ymax - ymin
 
-        y0_bound = (ymin+abs(ymin),ymin-6*abs(ymin))
-        A_bound = (0,5*np.pi/2*abs(ymax-ymin))
-        x0_bound = (xmin-xrange,xmax+xrange)
-        omg_bound = (0,xrange)
+        x0_bound = (xmin-x_range,xmax+x_range)
+        omg_bound = (0,x_range)
+
+        y_med = np.median(y)
+        y_avg = np.average(y)
+        up = True if y_avg>=y_med else False
+
+        if(up):
+            A_bound = (0,2*abs(y_range)*np.pi/2*x_range)
+            y0_bound = (ymin-y_range,ymin+y_range/2)
+        else:
+            A_bound = (0,-2*abs(y_range)*np.pi/2*x_range)
+            y0_bound = (ymax-y_range/2,ymin+y_range)
 
         BOUNDS = [y0_bound, A_bound, x0_bound, omg_bound]
 
