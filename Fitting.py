@@ -277,7 +277,7 @@ def guessParameters():
 
         omg_bound = (0.5*(2*np.pi)*guess_f,2*(2*np.pi)*guess_f)
 
-        BOUNDS = [y0_bound, A_bound, omg_bound, phi_bound]
+        BOUNDS_LIST = [[y0_bound, A_bound, omg_bound, phi_bound]]
 
     elif(function=='Square wave'):
 
@@ -313,28 +313,25 @@ def guessParameters():
 
         omg_bound = (0.5*(2*np.pi)*guess_f,2*(2*np.pi)*guess_f)
 
-        BOUNDS = [y0_bound, A_bound, omg_bound, phi_bound]
+        BOUNDS_LIST = [[y0_bound, A_bound, omg_bound, phi_bound]]
 
     elif(function=='Gaussian'):
 
         x_range = xmax - xmin
         y_range = ymax - ymin
-        
+
         mu_bound = (xmin-x_range,xmax+x_range)
         omg_bound = (0,x_range)
 
-        y_med = np.median(y)
-        y_avg = np.average(y)
-        up = True if y_avg>=y_med else False
+        A_bound1 = (abs(y_range)/3,2*abs(y_range)*2.5*x_range)
+        y0_bound1 = (ymin-y_range,ymin+y_range/2)
+        BOUNDS1 = [y0_bound1, A_bound1, mu_bound, omg_bound]
 
-        if(up):
-            A_bound = (0,2*abs(y_range)*2.5*x_range)
-            y0_bound = (ymin-y_range,ymin+y_range/2)
-        else:
-            A_bound = (0,-2*abs(y_range)*2.5*x_range)
-            y0_bound = (ymax-y_range/2,ymin+y_range)
-        
-        BOUNDS = [y0_bound, A_bound, mu_bound, omg_bound]
+        A_bound2 = (-abs(y_range)/3,-2*abs(y_range)*2.5*x_range)
+        y0_bound2 = (ymax-y_range/2,ymax+y_range)
+        BOUNDS2 = [y0_bound2, A_bound2, mu_bound, omg_bound]
+
+        BOUNDS_LIST = [BOUNDS1,BOUNDS2]
         
     elif(function=='Poisson'):
 
@@ -343,18 +340,15 @@ def guessParameters():
 
         lmd_bound = (max(0,xmin-x_range),xmax+x_range)
 
-        y_med = np.median(y)
-        y_avg = np.average(y)
-        up = True if y_avg>=y_med else False
+        A_bound1 = (0,2*abs(y_range))
+        y0_bound1 = (ymin-y_range,ymin+y_range/2)        
+        BOUNDS1 = [y0_bound1, A_bound1, lmd_bound]
 
-        if(up):
-            A_bound = (0,2*abs(y_range))
-            y0_bound = (ymin-y_range,ymin+y_range/2)
-        else:
-            A_bound = (0,-2*abs(y_range))
-            y0_bound = (ymax-y_range/2,ymin+y_range)
+        A_bound2 = (0,-2*abs(y_range))
+        y0_bound2 = (ymax-y_range/2,ymax+y_range)
+        BOUNDS2 = [y0_bound1, A_bound1, lmd_bound]        
 
-        BOUNDS = [y0_bound, A_bound, lmd_bound]
+        BOUNDS_LIST = [BOUNDS1,BOUNDS2]
 
     elif(function=='Laplacian'):
         
@@ -364,19 +358,16 @@ def guessParameters():
         mu_bound = (xmin-x_range,xmax+x_range)
         b_bound = (0,x_range)
 
-        y_med = np.median(y)
-        y_avg = np.average(y)
-        up = True if y_avg>=y_med else False
+        A_bound1 = (abs(y_range)/3,2*abs(y_range)*2*x_range)
+        y0_bound1 = (ymin-y_range,ymin+y_range/2)
+        BOUNDS1 = [y0_bound1, A_bound1, mu_bound, b_bound]
 
-        if(up):
-            A_bound = (0,2*abs(y_range)*2*x_range)
-            y0_bound = (ymin-y_range,ymin+y_range/2)
-        else:
-            A_bound = (0,-2*abs(y_range)*2*x_range)
-            y0_bound = (ymax-y_range/2,ymin+y_range)
+        A_bound2 = (-abs(y_range)/3,-2*abs(y_range)*2*x_range)
+        y0_bound2 = (ymax-y_range/2,ymax+y_range)
+        BOUNDS2 = [y0_bound2, A_bound2, mu_bound, b_bound]
 
-        BOUNDS = [y0_bound, A_bound, mu_bound, b_bound]
-        
+        BOUNDS_LIST = [BOUNDS1,BOUNDS2]
+
     elif(function=='Lorentzian'):
 
         x_range = xmax - xmin
@@ -385,18 +376,15 @@ def guessParameters():
         x0_bound = (xmin-x_range,xmax+x_range)
         omg_bound = (0,x_range)
 
-        y_med = np.median(y)
-        y_avg = np.average(y)
-        up = True if y_avg>=y_med else False
+        A_bound1 = (abs(y_range)/3,2*abs(y_range)*np.pi/2*x_range)
+        y0_bound1 = (ymin-y_range,ymin+y_range/2)
+        BOUNDS1 = [y0_bound1, A_bound1, x0_bound, omg_bound]
 
-        if(up):
-            A_bound = (0,2*abs(y_range)*np.pi/2*x_range)
-            y0_bound = (ymin-y_range,ymin+y_range/2)
-        else:
-            A_bound = (0,-2*abs(y_range)*np.pi/2*x_range)
-            y0_bound = (ymax-y_range/2,ymin+y_range)
+        A_bound2 = (-abs(y_range)/3,-2*abs(y_range)*np.pi/2*x_range)
+        y0_bound2 = (ymax-y_range/2,ymax+y_range)
+        BOUNDS2 = [y0_bound2, A_bound2, x0_bound, omg_bound]
 
-        BOUNDS = [y0_bound, A_bound, x0_bound, omg_bound]
+        BOUNDS_LIST = [BOUNDS1,BOUNDS2]
 
     elif(function=='Power'):
 
@@ -411,7 +399,7 @@ def guessParameters():
         A_bound = (-A_est,A_est)
         b_bound = (b_est-0.5*abs(b_est),b_est+0.5*abs(b_est))
 
-        BOUNDS = [A_bound,b_bound]
+        BOUNDS_LIST = [[A_bound,b_bound]]
 
     elif(function=='Exponential growth'):
 
@@ -449,7 +437,7 @@ def guessParameters():
             A_bound = (0,-10*abs(ymin))
             t_bound = (t_est-10*abs(t_est),t_est+10*abs(t_est))
 
-        BOUNDS = [y0_bound, A_bound, t_bound]
+        BOUNDS_LIST = [[y0_bound, A_bound, t_bound]]
         
     elif(function=='Exponential decay'):
 
@@ -491,7 +479,7 @@ def guessParameters():
             A_bound = (0,100*A_est)
             t_bound = (t_est-10*abs(t_est),t_est+10*abs(t_est))
 
-        BOUNDS = [y0_bound, A_bound, t_bound]
+        BOUNDS_LIST = [[y0_bound, A_bound, t_bound]]
 
     elif(function=='Logarithm'):
          
@@ -511,13 +499,26 @@ def guessParameters():
         A_bound = (A_est-2*abs(A_est),A_est+2*abs(A_est))
         x0_bound = (xmin - 10*abs(xmin),xmin)
 
-        BOUNDS = [y0_bound, A_bound, x0_bound]
+        BOUNDS_LIST = [[y0_bound, A_bound, x0_bound]]
+
+    #Empty array to store "initial guess"
+    iniParameters = []
 
     #Ignoring runtime warnings (in case the optimization passes through invalid values)
     with warnings.catch_warnings():
         warnings.filterwarnings('ignore')
         #Using differential evolution algorithm for minimizing chi-squared within the bounds
-        iniParameters = opt.differential_evolution(calcChiSquared,bounds=BOUNDS,polish=True).x
+        bestChiSquared = np.inf
+        for BOUNDS in BOUNDS_LIST:
+            tempParameters = opt.differential_evolution(calcChiSquared,bounds=BOUNDS).x
+            tempChiSquared = calcChiSquared(tempParameters)
+            if(tempChiSquared < bestChiSquared):
+                bestChiSquared = tempChiSquared
+                iniParameters = tempParameters
+
+    #If the fit doesn't work
+    if(iniParameters==[]):
+        return 1
 
     #Sending the "best guess" parameters to the final fitting algorithm
     return fitFunction(iniParameters)
