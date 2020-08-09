@@ -15,8 +15,6 @@
 import Fitting as fit
 import tkinter as tk
 import tkinter.ttk as ttk
-from tkinter import filedialog
-from tkinter import messagebox
 from inspect import signature
 
 ####################################################################################
@@ -258,7 +256,7 @@ class GUI:
         self.clear()
 
         #Letting user browse the file and calling readFile() in Fitting.py
-        self.fileLocation = filedialog.askopenfilename(title='Choose a file')
+        self.fileLocation = tk.filedialog.askopenfilename(title='Choose a file')
         self.fileCheck = fit.readFile(self.fileLocation)
 
         #Showing the directory of the file
@@ -498,19 +496,16 @@ class GUI:
     '''
     def help(self):
 
-        self.infoText = 'The curve fitting tool provides the user the ability to browse a .txt or .csv file containing the data set. '\
-        'The file must have 2 columns (no errors along y-axis) or 3 columns (with errors along y-axis), separated by commas or spaces. '\
-        'The user can then choose to plot the raw data or choose a function to fit the data to. The tool has the option for fitting polynomials '\
-        'of degree 0 upto 5 along with some other standard functions. These functions can either be fit automatically or manually by '\
-        'providing an initial guess for the parameters. The user can add plot annotations, grid lines or view the fit parameters and residuals '\
-        'as they wish!'\
-        '\n\nNOTE ON ERRORS:\n'\
-        'In case no errors are provided along the y-axis, the error on the parameters and the chi-squared value are calculated based on an error '\
-        'of 1.00 (arbitrary unit) on each data point. Due to this, the errors on the fitting parameters dont have much meaning; however the '\
-        'best fit can still be useful!'\
-        '\n\nHave fun plotting!'\
+        self.infoText = 'How to use it:'\
+        '\n\u2022 Browse a .txt or .csv file with your data set. The file must have 2 columns (no errors along y-axis) or 3 columns (with errors along y-axis), separated by commas or spaces.'\
+        '\n\u2022 You can then choose to plot the raw data or choose a function to fit the data to. The tool has the option for fitting polynomials of degree 0 upto 5 along with some other standard functions.'\
+        '\n\u2022 Click \'Fit data automatically\' if you want the tool to attempt a fit by itself. Or click \'Fit data using my guess\' after providing an initial guess for the fitting parameters if you want to attempt a fit manually.'\
+        '\n\u2022 You should see the best fit line if the routine runs successfully. You can add plot annotations, grid lines or view the fit parameters and residuals plot as you wish!'\
+        '\n\nNote on errors:'\
+        '\nIn case no errors are provided along the y-axis, the error on the parameters and the chi-squared value are calculated based on an error of 1.00 (arbitrary unit) on each data point. Due to this, the errors on the fitting parameters dont have much meaning; however the best fit can still be useful!'\
+        '\n\nHave fun plotting!'
 
-        messagebox.showinfo('Help', self.infoText)
+        tk.messagebox.showinfo('Help', self.infoText)
 
     '''
     This function opens up an 'about' message box showing author and copyright status. 
@@ -518,7 +513,7 @@ class GUI:
     def about(self):
 
         self.aboutText = 'CFit (Curve fitting Tool)\n\u24EA 2020 Jiten Dhandha\nSchool Of Physics and Astronomy\nThe University of Manchester'
-        messagebox.showinfo('About', self.aboutText)
+        tk.messagebox.showinfo('About', self.aboutText)
 
     '''
     This function exits the GUI.
