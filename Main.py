@@ -14,6 +14,7 @@
 
 import Fitting as fit
 import tkinter as tk
+from tkinter import filedialog
 import tkinter.ttk as ttk
 from inspect import signature
 
@@ -256,7 +257,7 @@ class GUI:
         self.clear()
 
         #Letting user browse the file and calling readFile() in Fitting.py
-        self.fileLocation = tk.filedialog.askopenfilename(title='Choose a file')
+        self.fileLocation = filedialog.askopenfilename(title='Choose a file')
         self.fileCheck = fit.readFile(self.fileLocation)
 
         #Showing the directory of the file
