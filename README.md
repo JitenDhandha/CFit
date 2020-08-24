@@ -23,4 +23,8 @@ CFit is a curve fitting tool in python, based on the method of least squares. It
 
 **Note on errors**: In case no errors are provided along the y-axis, the error on the parameters and the chi-squared value are calculated based on an error of 1.00 (arbitrary unit) on each data point. Due to this, the errors on the fitting parameters dont have much meaning; however the best fit can still be useful!
 
+## Bugs and suggestions
+
+If you find any bugs, run into errors or have suggestions on functions you would like to see added, feel free to open a GitHub issue or email me directly at jitendhandha@gmail.com. I will be more than happy to take a look at it!
+
 ### Have fun plotting!
