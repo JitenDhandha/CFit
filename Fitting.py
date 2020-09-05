@@ -13,8 +13,10 @@
 ####################################################################################
 
 import numpy as np
+import matplotlib
+matplotlib.use('Qt5Agg')    #This requires PyQt5 to be installed.
 import matplotlib.pyplot as plt
-from matplotlib import gridspec
+import matplotlib.gridspec as gridspec
 import scipy.optimize as opt
 import scipy.special as sp
 import scipy.stats as stats
@@ -510,7 +512,8 @@ def guessParameters():
         #Using differential evolution algorithm for minimizing chi-squared within the bounds
         bestChiSquared = np.inf
         for BOUNDS in BOUNDS_LIST:
-            tempParameters = opt.differential_evolution(calcChiSquared,bounds=BOUNDS).x
+            #Fixed seed for repeatability of fit
+            tempParameters = opt.differential_evolution(calcChiSquared,bounds=BOUNDS,seed=0).x
             tempChiSquared = calcChiSquared(tempParameters)
             if(tempChiSquared < bestChiSquared):
                 bestChiSquared = tempChiSquared
@@ -590,7 +593,7 @@ def fitFunction(iniParameters):
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore")
             #Main optimization happens here
-            #Note: curve_fit populates sigma wtih 1's as a default.
+            #Note: curve_fit populates sigma with 1's as a default.
             #absolute_sigma = True is the flag that forces errors to not be used in a relative manner
             fitStructure = opt.curve_fit(functions[function],x,y,absolute_sigma=True,p0=iniParameters,sigma=y_err)
 
@@ -704,7 +707,7 @@ def plotFitData(plotTitle,xTitle,yTitle,viewGrid,viewParameters,viewResiduals):
     elif(not viewResiduals and viewParameters):
         gs = gridspec.GridSpec(1, 2, width_ratios=[4, 1])
         axes2 = figure2.add_subplot(gs[0])
-        axes4 = figure2.add_subplot(gs[1])    
+        axes4 = figure2.add_subplot(gs[1])
     else:
         axes2 = figure2.add_subplot(111)
 
