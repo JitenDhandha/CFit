@@ -465,7 +465,6 @@ def guessParameters():
         with np.errstate(invalid='ignore'):
             bestChiSquared = np.inf
             for BOUNDS in BOUNDS_LIST:
-                #Fixed seed for repeatability of fit
                 tempParameters = opt.differential_evolution(calcChiSquared,bounds=BOUNDS,seed=0).x
                 tempChiSquared = calcChiSquared(tempParameters)
                 if(tempChiSquared < bestChiSquared):
@@ -492,7 +491,6 @@ def guessParameters():
         with np.errstate(invalid='ignore'):
             bestChiSquared = np.inf
             for BOUNDS in BOUNDS_LIST:
-                #Fixed seed for repeatability of fit
                 tempParameters = opt.differential_evolution(calcChiSquared,bounds=BOUNDS,seed=0).x
                 tempChiSquared = calcChiSquared(tempParameters)
                 if(tempChiSquared < bestChiSquared):
@@ -520,7 +518,6 @@ def guessParameters():
         with np.errstate(invalid='ignore'):
             bestChiSquared = np.inf
             for BOUNDS in BOUNDS_LIST:
-                #Fixed seed for repeatability of fit
                 tempParameters = opt.differential_evolution(calcChiSquared,bounds=BOUNDS,seed=0).x
                 tempChiSquared = calcChiSquared(tempParameters)
                 if(tempChiSquared < bestChiSquared):
@@ -548,7 +545,6 @@ def guessParameters():
         with np.errstate(invalid='ignore'):
             bestChiSquared = np.inf
             for BOUNDS in BOUNDS_LIST:
-                #Fixed seed for repeatability of fit
                 tempParameters = opt.differential_evolution(calcChiSquared,bounds=BOUNDS,seed=0).x
                 tempChiSquared = calcChiSquared(tempParameters)
                 if(tempChiSquared < bestChiSquared):
