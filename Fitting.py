@@ -20,6 +20,7 @@ import matplotlib.gridspec as gridspec
 import scipy.optimize as opt
 import scipy.special as sp
 import scipy.stats as stats
+import scipy.linalg as linalg
 import warnings
 
 ####################################################################################
@@ -165,23 +166,14 @@ functions = {
                      rawParametersStr=[r'$A$',r'$b$'],
                      unicodeParametersStr=['A','b']),
 
-            'Exponential growth':   
-            Function(name='Exponential growth',
-                     func=lambda x,y0,A,t: y0 + A*np.exp(x/t),
+            'Exponential':    
+            Function(name='Exponential',
+                     func=lambda x,y0,A,b: y0 + A*np.exp(b*x),
                      numberOfParameters=3,
-                     rawFuncStr=r"$y = y_0 + A\/e^{x/t}$",
-                     unicodeFuncStr="y = y\u2080 + A e^(x/t)",
-                     rawParametersStr=[r'$y_0$',r'$A$',r'$t$'],
-                     unicodeParametersStr=['y\u2080','A','t']),
-
-            'Exponential decay':    
-            Function(name='Exponential decay',
-                     func=lambda x,y0,A,t: y0 + A*np.exp(-x/t),
-                     numberOfParameters=3,
-                     rawFuncStr=r"$y = y_0 + A\/e^{-x/t}$",
-                     unicodeFuncStr="y = y\u2080 + A e^(-x/t)",
-                     rawParametersStr=[r'$y_0$',r'$A$',r'$t$'],
-                     unicodeParametersStr=['y\u2080','A','t']),
+                     rawFuncStr=r"$y = y_0 + A\/e^{bx}$",
+                     unicodeFuncStr="y = y\u2080 + A e^(bx)",
+                     rawParametersStr=[r'$y_0$',r'$A$',r'$b$'],
+                     unicodeParametersStr=['y\u2080','A','b']),
 
             'Logarithm':            
             Function(name='Logarithm',
@@ -341,11 +333,10 @@ def calcGoodnessOfFit():
 '''
 This function provides an initial guess for the final fitting to take place in 
 fitFunction(). It comes into play when the user wants to fit the data automatically.
-The initial guess is based on a two step procedure:
-1) Looking at data and figuring out bounds on the guess
-2) Getting a single-valued guess by global minimization of chi-squared using the 
-differential evolution algorithm in scipy
-(NOTE: In case of polynomial, a straightforward np.polyfit is used instead)
+The initial guess is based on a two step procedure. It involves looking at the data:
+1) and figuring out a single-valued "guess"
+2) or figuring out bounds on the parameters and obtaining a guess from that by
+global minimization of chi-squared using the scipy differential evolution algorithm.
 @Arguments:
 --
 @Return value:
@@ -358,20 +349,23 @@ def guessParameters():
     global x
     global y
     global numberOfDataPoints
+    global numberOfParameter
 
-    #Useful quantities for guess estimation
+    #Useful quantities for parameter estimation
     xmin = min(x)
     xmax = max(x)
     ymin = min(y)
     ymax = max(y)
     
-    #All the parameter bound estimation happens here
+    #Empty array to store "initial guess"
+    iniParameters = []
+
+    #All the parameter estimation happens here
 
     if(function in ['Constant','Linear','Quadratic','Cubic','Quartic','Quintic']):
 
         order = numberOfParameters - 1
         iniParameters = np.polyfit(x,y,deg=order,w=1/y_err)
-        return fitFunction(iniParameters)
 
     elif(function=='Sine wave'):
 
@@ -407,7 +401,10 @@ def guessParameters():
 
         omg_bound = (0.5*(2*np.pi)*guess_f,2*(2*np.pi)*guess_f)
 
-        BOUNDS_LIST = [[y0_bound, A_bound, omg_bound, phi_bound]]
+        BOUNDS = [y0_bound, A_bound, omg_bound, phi_bound]
+
+        with np.errstate(invalid='ignore'):
+            iniParameters = opt.differential_evolution(calcChiSquared,bounds=BOUNDS,seed=0).x
 
     elif(function=='Square wave'):
 
@@ -443,7 +440,10 @@ def guessParameters():
 
         omg_bound = (0.5*(2*np.pi)*guess_f,2*(2*np.pi)*guess_f)
 
-        BOUNDS_LIST = [[y0_bound, A_bound, omg_bound, phi_bound]]
+        BOUNDS = [y0_bound, A_bound, omg_bound, phi_bound]
+
+        with np.errstate(invalid='ignore'):
+            iniParameters = opt.differential_evolution(calcChiSquared,bounds=BOUNDS,seed=0).x
 
     elif(function=='Gaussian'):
 
@@ -462,6 +462,16 @@ def guessParameters():
         BOUNDS2 = [y0_bound2, A_bound2, mu_bound, omg_bound]
 
         BOUNDS_LIST = [BOUNDS1,BOUNDS2]
+
+        with np.errstate(invalid='ignore'):
+            bestChiSquared = np.inf
+            for BOUNDS in BOUNDS_LIST:
+                #Fixed seed for repeatability of fit
+                tempParameters = opt.differential_evolution(calcChiSquared,bounds=BOUNDS,seed=0).x
+                tempChiSquared = calcChiSquared(tempParameters)
+                if(tempChiSquared < bestChiSquared):
+                    bestChiSquared = tempChiSquared
+                    iniParameters = tempParameters
         
     elif(function=='Poisson'):
 
@@ -479,6 +489,16 @@ def guessParameters():
         BOUNDS2 = [y0_bound1, A_bound1, lmd_bound]        
 
         BOUNDS_LIST = [BOUNDS1,BOUNDS2]
+
+        with np.errstate(invalid='ignore'):
+            bestChiSquared = np.inf
+            for BOUNDS in BOUNDS_LIST:
+                #Fixed seed for repeatability of fit
+                tempParameters = opt.differential_evolution(calcChiSquared,bounds=BOUNDS,seed=0).x
+                tempChiSquared = calcChiSquared(tempParameters)
+                if(tempChiSquared < bestChiSquared):
+                    bestChiSquared = tempChiSquared
+                    iniParameters = tempParameters
 
     elif(function=='Laplacian'):
         
@@ -498,6 +518,16 @@ def guessParameters():
 
         BOUNDS_LIST = [BOUNDS1,BOUNDS2]
 
+        with np.errstate(invalid='ignore'):
+            bestChiSquared = np.inf
+            for BOUNDS in BOUNDS_LIST:
+                #Fixed seed for repeatability of fit
+                tempParameters = opt.differential_evolution(calcChiSquared,bounds=BOUNDS,seed=0).x
+                tempChiSquared = calcChiSquared(tempParameters)
+                if(tempChiSquared < bestChiSquared):
+                    bestChiSquared = tempChiSquared
+                    iniParameters = tempParameters
+
     elif(function=='Lorentzian'):
 
         x_range = xmax - xmin
@@ -516,138 +546,99 @@ def guessParameters():
 
         BOUNDS_LIST = [BOUNDS1,BOUNDS2]
 
+        with np.errstate(invalid='ignore'):
+            bestChiSquared = np.inf
+            for BOUNDS in BOUNDS_LIST:
+                #Fixed seed for repeatability of fit
+                tempParameters = opt.differential_evolution(calcChiSquared,bounds=BOUNDS,seed=0).x
+                tempChiSquared = calcChiSquared(tempParameters)
+                if(tempChiSquared < bestChiSquared):
+                    bestChiSquared = tempChiSquared
+                    iniParameters = tempParameters
+
     elif(function=='Power'):
 
         lX = np.log(abs(x), where=x>0)
         lY = np.log(abs(y), where=x>0)
 
-        with warnings.catch_warnings():
-            warnings.filterwarnings('ignore')
+        with np.errstate(invalid='ignore'):
             b_est, logA_est = np.polyfit(lX,lY,w=np.exp(lX),deg=1)
         A_est = np.exp(logA_est)
 
         A_bound = (-A_est,A_est)
         b_bound = (b_est-0.5*abs(b_est),b_est+0.5*abs(b_est))
 
-        BOUNDS_LIST = [[A_bound,b_bound]]
+        BOUNDS = [A_bound,b_bound]
 
-    elif(function=='Exponential growth'):
+        with np.errstate(invalid='ignore'):
+            iniParameters = opt.differential_evolution(calcChiSquared,bounds=BOUNDS,seed=0).x
 
-        monotonicity = True if np.average(np.diff(y))>=0 else False
+    elif(function=='Exponential'):
 
-        if(monotonicity):
+        #Inspired by https://github.com/scipy/scipy/pull/9158
 
-            t_arr = []
-            for i in range(numberOfDataPoints-1):
-                if(y[i+1]==y[i]):
-                    continue
-                else:
-                    temp = (y[i]-ymin)*(x[i+1]-x[i])/(y[i+1]-y[i])
-                    t_arr.append(temp)
-            hist, edges = np.histogram(t_arr, bins=int(len(t_arr)/5))
-            t_est = (edges[np.argmax(hist)] + edges[np.argmax(hist)+1])/2
+        s = np.empty_like(y)
+        s[0] = 0
+        s[1:] = np.cumsum(0.5 * (y[1:] + y[:-1]) * np.diff(x))
 
-            y0_bound = (ymin+abs(ymin),ymin-9*abs(ymin))
-            A_bound = (0,10*abs(ymin))
-            t_bound = (t_est-10*abs(t_est),t_est+10*abs(t_est))
-      
-        else:
+        xn = np.array(x - x[0])
+        yn = np.array(y - y[0])
+    
+        sx2 = np.sum(xn**2)
+        sxs = np.sum(xn*s)
+        sys = np.sum(yn*s)
+        ss2 = np.sum(s**2)
+        sxy = np.sum(xn*yn)
+    
+        _, [b] = linalg.inv([[sx2, sxs], [sxs, ss2]]).dot([[sxy], [sys]])
+    
+        ex = np.exp(b * x)
+    
+        se1 = np.sum(ex)
+        se2 = np.sum(ex**2)
+        sy0 = np.sum(y)
+        sye = np.sum((y * ex))
+    
+        [y0], [A] = linalg.inv([[x.size, se1], [se1, se2]]).dot([[sy0], [sye]])
 
-            t_arr = []
-            for i in range(numberOfDataPoints-1):
-                if(y[i+1]==y[i]):
-                    continue
-                else:
-                    temp = (y[i]-ymax)*(x[i+1]-x[i])/(y[i+1]-y[i])
-                    t_arr.append(temp)
-            hist, edges = np.histogram(t_arr, bins=int(len(t_arr)/5))
-            t_est = (edges[np.argmax(hist)] + edges[np.argmax(hist)+1])/2
-
-            y0_bound = (ymax-abs(ymax),ymin+9*abs(ymax))
-            A_bound = (0,-10*abs(ymin))
-            t_bound = (t_est-10*abs(t_est),t_est+10*abs(t_est))
-
-        BOUNDS_LIST = [[y0_bound, A_bound, t_bound]]
-        
-    elif(function=='Exponential decay'):
-
-        monotonicity = True if np.average(np.diff(y))>=0 else False
-
-        if(monotonicity):
-
-            A_est = y[0] + (-x[0])*(y[1]-y[0])/(x[1]-x[0]) - ymax
-
-            t_arr = []
-            for i in range(numberOfDataPoints-1):
-                if(y[i+1]==y[i]):
-                    continue
-                else:
-                    temp = -(y[i]-ymax)*(x[i+1]-x[i])/(y[i+1]-y[i])
-                    t_arr.append(temp)
-            hist, edges = np.histogram(t_arr, bins=int(len(t_arr)/5))
-            t_est = (edges[np.argmax(hist)] + edges[np.argmax(hist)+1])/2
-            
-            y0_bound = (ymax-abs(ymax),ymax+9*abs(ymax))
-            A_bound = (0,100*A_est)
-            t_bound = (t_est-10*abs(t_est),t_est+10*abs(t_est))
-      
-        else:
-            
-            A_est = y[0] + (-x[0])*(y[1]-y[0])/(x[1]-x[0]) - ymin
-
-            t_arr = []
-            for i in range(numberOfDataPoints-1):
-                if(y[i+1]==y[i]):
-                    continue
-                else:
-                    temp = -(y[i]-ymin)*(x[i+1]-x[i])/(y[i+1]-y[i])
-                    t_arr.append(temp)
-            hist, edges = np.histogram(t_arr, bins=int(len(t_arr)/5))
-            t_est = (edges[np.argmax(hist)] + edges[np.argmax(hist)+1])/2
-            
-            y0_bound = (ymin+abs(ymin),ymin-9*abs(ymin))
-            A_bound = (0,100*A_est)
-            t_bound = (t_est-10*abs(t_est),t_est+10*abs(t_est))
-
-        BOUNDS_LIST = [[y0_bound, A_bound, t_bound]]
+        iniParameters = [y0,A,b]
 
     elif(function=='Logarithm'):
          
-        A_arr = []
-        for i in range(numberOfDataPoints-1):
-            if(x[i+1]==x[i]):
-                continue
-            else:
-                temp = (y[i+1]-y[i])*(x[i]-xmin)/(x[i+1]-x[i])
-                A_arr.append(temp)
-        hist, edges = np.histogram(A_arr, bins=int(len(A_arr)/5))
-        A_est = (edges[np.argmax(hist)] + edges[np.argmax(hist)+1])/2
+        #Inspired by https://github.com/scipy/scipy/pull/9158
 
-        y0_est = y[np.argmin(np.diff(y)/np.diff(x) - A_est)]   
+        s = np.empty_like(x)
+        s[0] = 0
+        s[1:] = np.cumsum(0.5 * (x[1:] + x[:-1]) * np.diff(y))
 
-        y0_bound = (y0_est-5*abs(y0_est),y0_est+5*abs(y0_est))
-        A_bound = (A_est-2*abs(A_est),A_est+2*abs(A_est))
-        x0_bound = (xmin - 10*abs(xmin),xmin)
+        xn = np.array(x - x[0])
+        yn = np.array(y - y[0])
+    
+        sy2 = np.sum(yn**2)
+        sys = np.sum(yn*s)
+        sxs = np.sum(xn*s)
+        ss2 = np.sum(s**2)
+        syx = np.sum(xn*yn)
+    
+        _, [t1] = linalg.inv([[sy2, sys], [sys, ss2]]).dot([[syx], [sxs]])
+    
+        A = 1/t1
 
-        BOUNDS_LIST = [[y0_bound, A_bound, x0_bound]]
+        ey = np.exp(t1 * y)
+    
+        se1 = np.sum(ey)
+        se2 = np.sum(ey**2)
+        sx0 = np.sum(x)
+        sxe = np.sum((x * ey))
+    
+        [x0], [t2] = linalg.inv([[x.size, se1], [se1, se2]]).dot([[sx0], [sxe]])
 
-    #Empty array to store "initial guess"
-    iniParameters = []
+        with np.errstate(invalid='ignore'):
+            y0 = -A*np.log(t2)
+            
+        iniParameters = [y0,A,x0]
 
-    #Ignoring runtime warnings (in case the optimization passes through invalid values)
-    with warnings.catch_warnings():
-        warnings.filterwarnings('ignore')
-        #Using differential evolution algorithm for minimizing chi-squared within the bounds
-        bestChiSquared = np.inf
-        for BOUNDS in BOUNDS_LIST:
-            #Fixed seed for repeatability of fit
-            tempParameters = opt.differential_evolution(calcChiSquared,bounds=BOUNDS,seed=0).x
-            tempChiSquared = calcChiSquared(tempParameters)
-            if(tempChiSquared < bestChiSquared):
-                bestChiSquared = tempChiSquared
-                iniParameters = tempParameters
-
-    #If the fit doesn't work
+    #If there is no initial guess
     if(iniParameters==[]):
         return 1
 
@@ -718,8 +709,7 @@ def fitFunction(iniParameters):
     #Doing the final fitting of the data
     try:
         #Ignoring runtime warnings (in case the optimization passes through invalid values) 
-        with warnings.catch_warnings():
-            warnings.filterwarnings("ignore")
+        with np.errstate(invalid='ignore'):
             #Main optimization happens here
             #Note: curve_fit populates sigma with 1's as a default.
             #absolute_sigma = True is the flag that forces errors to not be used in a relative manner
