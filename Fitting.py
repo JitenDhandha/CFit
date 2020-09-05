@@ -402,7 +402,8 @@ def guessParameters():
 
         BOUNDS = [y0_bound, A_bound, omg_bound, phi_bound]
 
-        with np.errstate(invalid='ignore'):
+        with warnings.catch_warnings():
+            warnings.filterwarnings('ignore')
             iniParameters = opt.differential_evolution(calcChiSquared,bounds=BOUNDS,seed=0).x
 
     elif(function=='Square wave'):
@@ -441,7 +442,8 @@ def guessParameters():
 
         BOUNDS = [y0_bound, A_bound, omg_bound, phi_bound]
 
-        with np.errstate(invalid='ignore'):
+        with warnings.catch_warnings():
+            warnings.filterwarnings('ignore')
             iniParameters = opt.differential_evolution(calcChiSquared,bounds=BOUNDS,seed=0).x
 
     elif(function=='Gaussian'):
@@ -462,7 +464,8 @@ def guessParameters():
 
         BOUNDS_LIST = [BOUNDS1,BOUNDS2]
 
-        with np.errstate(invalid='ignore'):
+        with warnings.catch_warnings():
+            warnings.filterwarnings('ignore')
             bestChiSquared = np.inf
             for BOUNDS in BOUNDS_LIST:
                 tempParameters = opt.differential_evolution(calcChiSquared,bounds=BOUNDS,seed=0).x
@@ -488,7 +491,8 @@ def guessParameters():
 
         BOUNDS_LIST = [BOUNDS1,BOUNDS2]
 
-        with np.errstate(invalid='ignore'):
+        with warnings.catch_warnings():
+            warnings.filterwarnings('ignore')
             bestChiSquared = np.inf
             for BOUNDS in BOUNDS_LIST:
                 tempParameters = opt.differential_evolution(calcChiSquared,bounds=BOUNDS,seed=0).x
@@ -515,7 +519,8 @@ def guessParameters():
 
         BOUNDS_LIST = [BOUNDS1,BOUNDS2]
 
-        with np.errstate(invalid='ignore'):
+        with warnings.catch_warnings():
+            warnings.filterwarnings('ignore')
             bestChiSquared = np.inf
             for BOUNDS in BOUNDS_LIST:
                 tempParameters = opt.differential_evolution(calcChiSquared,bounds=BOUNDS,seed=0).x
@@ -542,7 +547,8 @@ def guessParameters():
 
         BOUNDS_LIST = [BOUNDS1,BOUNDS2]
 
-        with np.errstate(invalid='ignore'):
+        with warnings.catch_warnings():
+            warnings.filterwarnings('ignore')
             bestChiSquared = np.inf
             for BOUNDS in BOUNDS_LIST:
                 tempParameters = opt.differential_evolution(calcChiSquared,bounds=BOUNDS,seed=0).x
@@ -565,7 +571,8 @@ def guessParameters():
 
         BOUNDS = [A_bound,b_bound]
 
-        with np.errstate(invalid='ignore'):
+        with warnings.catch_warnings():
+            warnings.filterwarnings('ignore')
             iniParameters = opt.differential_evolution(calcChiSquared,bounds=BOUNDS,seed=0).x
 
     elif(function=='Exponential'):
@@ -628,7 +635,8 @@ def guessParameters():
     
         [x0], [t2] = linalg.inv([[x.size, se1], [se1, se2]]).dot([[sx0], [sxe]])
 
-        with np.errstate(invalid='ignore'):
+        with warnings.catch_warnings():
+            warnings.filterwarnings('ignore')
             y0 = -A*np.log(t2)
             
         iniParameters = [y0,A,x0]
@@ -704,7 +712,8 @@ def fitFunction(iniParameters):
     #Doing the final fitting of the data
     try:
         #Ignoring runtime warnings (in case the optimization passes through invalid values) 
-        with np.errstate(invalid='ignore'):
+        with warnings.catch_warnings():
+            warnings.filterwarnings('ignore')
             #Main optimization happens here
             #Note: curve_fit populates sigma with 1's as a default.
             #absolute_sigma = True is the flag that forces errors to not be used in a relative manner
