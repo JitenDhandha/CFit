@@ -349,7 +349,6 @@ def guessParameters():
     global x
     global y
     global numberOfDataPoints
-    global numberOfParameter
 
     #Useful quantities for parameter estimation
     xmin = min(x)
