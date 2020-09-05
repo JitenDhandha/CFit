@@ -26,44 +26,172 @@ import warnings
 #                                 LIST OF FUNCTIONS                                #
 ####################################################################################
 
-#POLYNOMIALS
-constant = lambda x,a: np.polyval([a],x)
-linear = lambda x,a,b: np.polyval([a,b],x)
-quadratic = lambda x,a,b,c: np.polyval([a,b,c],x)
-cubic = lambda x,a,b,c,d: np.polyval([a,b,c,d],x)
-quartic = lambda x,a,b,c,d,e: np.polyval([a,b,c,d,e],x)
-quintic = lambda x,a,b,c,d,e,f: np.polyval([a,b,c,d,e,f],x)
-#PERIODIC FUNCTIONS
-sine_wave = lambda x,y0,A,omg,phi: y0 + A*np.sin(omg*x+phi)
-square_wave = lambda x,y0,A,omg,phi: y0 + A*np.sign(np.sin(omg*x+phi))
-#PEAK-BASED FUNCTIONS
-gaussian = lambda x,y0,A,mu,sig: y0 + (A/(sig*np.sqrt(2*np.pi)))*np.exp((-1/2)*((x-mu)/sig)**2)
-poisson = lambda x,y0,A,lmd: y0 + A*(np.exp(-lmd))*(lmd**x)/sp.gamma(x)
-laplace = lambda x,y0,A,mu,b: y0 + (A/(2*b))*np.exp(-np.abs(x-mu)/b)
-lorentz = lambda x,y0,A,x0,omg: y0 + (2*A/np.pi)*(omg/(4*(x-x0)**2+omg**2))
-#POLYNOMIAL-BASED FUNCTIONS
-power = lambda x,A,b: A*(x)**b
-#EXPONENTIALS AND LOGARITHMS
-exp_growth = lambda x,y0,A,t: y0 + A*np.exp(x/t)
-exp_decay = lambda x,y0,A,t: y0 + A*np.exp(-x/t)
-logarithm = lambda x,y0,A,x0: y0 + A*np.log(x-x0)
+#Class to hold all relevant function information
+class Function():
+    def __init__(self,name,func,numberOfParameters,rawFuncStr,unicodeFuncStr,rawParametersStr,unicodeParametersStr):
+        self.name = name
+        self.func = func
+        self.numberOfParameters = numberOfParameters
+        self.rawFuncStr = rawFuncStr
+        self.unicodeFuncStr = unicodeFuncStr
+        self.rawParametersStr = rawParametersStr
+        self.unicodeParametersStr = unicodeParametersStr
+
+'''
+Current supported functions are as follows:
+Polynomial: constant, linear, quadratic, cubic, quartic, quintic
+Periodic functions: sine wave, square wave
+Peak shape functions: gaussian, poisson, laplace, lorentz
+Polynomial-based functions: power law
+Exponentials and logarithms: exponential growth, exponential decay, logarithm
+'''
+
 #Dictonary to hold the functions
-functions = {'Constant':constant,
-             'Linear':linear,
-             'Quadratic':quadratic,
-             'Cubic':cubic,
-             'Quartic':quartic,
-             'Quintic':quintic,
-             'Sine wave':sine_wave, 
-             'Square wave':square_wave, 
-             'Gaussian':gaussian, 
-             'Poisson':poisson,
-             'Laplacian':laplace,
-             'Lorentzian':lorentz,
-             'Power':power,
-             'Exponential growth':exp_growth,
-             'Exponential decay':exp_decay,
-             'Logarithm':logarithm}
+functions = {
+            'Constant': 
+             Function(name='Constant',
+                      func=lambda x,a: np.polyval([a],x),
+                      numberOfParameters=1,
+                      rawFuncStr=r"$y = a$",
+                      unicodeFuncStr="y = a",
+                      rawParametersStr=[r'$a$'],
+                      unicodeParametersStr=['a']),
+
+            'Linear': 
+            Function(name='Linear',
+                     func=lambda x,a,b: np.polyval([a,b],x),
+                     numberOfParameters=2,
+                     rawFuncStr=r"$y = ax+b$",
+                     unicodeFuncStr="y = ax+b",
+                     rawParametersStr=[r'$a$',r'$b$'],
+                     unicodeParametersStr=['a','b']),
+
+            'Quadratic': 
+            Function(name='Quadratic',
+                     func=lambda x,a,b,c: np.polyval([a,b,c],x),
+                     numberOfParameters=3,
+                     rawFuncStr=r"$y = ax^2+bx+c$",
+                     unicodeFuncStr="y = ax\u00B2+bx+c",
+                     rawParametersStr=[r'$a$',r'$b$',r'$c$'],
+                     unicodeParametersStr=['a','b','c']),
+
+            'Cubic': 
+            Function(name='Cubic',
+                     func=lambda x,a,b,c,d: np.polyval([a,b,c,d],x),
+                     numberOfParameters=4,
+                     rawFuncStr=r"$y = ax^3+bx^2+cx+d$",
+                     unicodeFuncStr="y = ax\u00B3+bx\u00B2+cx+d",
+                     rawParametersStr=[r'$a$',r'$b$',r'$c$',r'$d$'],
+                     unicodeParametersStr=['a','b','c','d']),
+
+            'Quartic': 
+            Function(name='Quadratic',
+                     func=lambda x,a,b,c,d,e: np.polyval([a,b,c,d,e],x),
+                     numberOfParameters=5,
+                     rawFuncStr=r"$y = ax^4+bx^3+cx^2+dx+e$",
+                     unicodeFuncStr="y = ax\u2074+bx\u00B3+cx\u00B2+dx+e",
+                     rawParametersStr=[r'$a$',r'$b$',r'$c$',r'$d$',r'$e$'],
+                     unicodeParametersStr=['a','b','c','d','e']),
+
+            'Quintic': 
+            Function(name='Quintic',
+                     func=lambda x,a,b,c,d,e,f: np.polyval([a,b,c,d,e,f],x),
+                     numberOfParameters=6,
+                     rawFuncStr=r"$y = ax^5+bx^4+cx^3+dx^2+ex+f$",
+                     unicodeFuncStr="y = ax\u2075+bx\u2074+cx\u00B3+dx\u00B2+ex+f",
+                     rawParametersStr=[r'$a$',r'$b$',r'$c$',r'$d$',r'$e$',r'$f$'],
+                     unicodeParametersStr=['a','b','c','d','e','f']),
+
+            'Sine wave': 
+            Function(name='Sine wave',
+                     func=lambda x,y0,A,omg,phi: y0 + A*np.sin(omg*x+phi),
+                     numberOfParameters=4,
+                     rawFuncStr=r"$y = y_0 + A[\sin(\omega x+\phi)]$",
+                     unicodeFuncStr="y = y\u2080 + A sin(\u03C9x+\u03D5)",
+                     rawParametersStr=[r'$y_0$',r'$A$',r'$\omega$',r'$\phi$'],
+                     unicodeParametersStr=['y\u2080','A','\u03C9','\u03D5']),
+
+            'Square wave': 
+            Function(name='Square wave',
+                     func=lambda x,y0,A,omg,phi: y0 + A*np.sign(np.sin(omg*x+phi)),
+                     numberOfParameters=4,
+                     rawFuncStr=r"$y = y_0 + A\/signum[\sin(\omega x+\phi)]$",
+                     unicodeFuncStr="y = y\u2080 + A signum[sin(\u03C9x+\u03D5)]",
+                     rawParametersStr=[r'$y_0$',r'$A$',r'$\omega$',r'$\phi$'],
+                     unicodeParametersStr=['y\u2080','A','\u03C9','\u03D5']),
+
+            'Gaussian': 
+            Function(name='Gaussian',
+                     func=lambda x,y0,A,mu,sig: y0 + (A/(sig*np.sqrt(2*np.pi)))*np.exp((-1/2)*((x-mu)/sig)**2),
+                     numberOfParameters=4,
+                     rawFuncStr=r"$y = y_0 + \frac{A}{\sigma \sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}}$",
+                     unicodeFuncStr="y = y\u2080 + A/[\u03C3 \u221A(2\u03C0)] \u00D7 e^[-(x-\u03BC)\u00B2/(2\u03C3\u00B2)]",
+                     rawParametersStr=[r'$y_0$',r'$A$',r'$\mu$',r'$\sigma$'],
+                     unicodeParametersStr=['y\u2080','A','\u03BC','\u03C3']),
+
+            'Poisson': 
+            Function(name='Poisson',
+                     func=lambda x,y0,A,lmd: y0 + A*(np.exp(-lmd))*(lmd**x)/sp.gamma(x),
+                     numberOfParameters=3,
+                     rawFuncStr=r"$y = y_0 + A\/\frac{e^{-\lambda}\lambda^x}{x!}$",
+                     unicodeFuncStr="y = y\u2080 + A [(e^\u03BB)(\u03BB^x)]/x!",
+                     rawParametersStr=[r'$y_0$',r'$A$',r'$\lambda$'],
+                     unicodeParametersStr=['y\u2080','A','\u03BB']),
+
+            'Laplacian':            
+            Function(name='Laplacian',
+                     func=lambda x,y0,A,mu,b: y0 + (A/(2*b))*np.exp(-np.abs(x-mu)/b),
+                     numberOfParameters=4,
+                     rawFuncStr=r"$y = y_0 + \frac{A}{2b}e^{-\frac{|x-\mu|}{b}}$",
+                     unicodeFuncStr="y = y\u2080 + A/(2b) \u00D7 e^(-|(x-\u03BC)|/b)",
+                     rawParametersStr=[r'$y_0$',r'$A$',r'$\mu$',r'$b$'],
+                     unicodeParametersStr=['y\u2080','A','\u03BC','b']),
+
+            'Lorentzian':           
+            Function(name='Lorentzian',
+                     func=lambda x,y0,A,x0,omg: y0 + (2*A/np.pi)*(omg/(4*(x-x0)**2+omg**2)),
+                     numberOfParameters=4,
+                     rawFuncStr=r"$y = y_0 + \frac{2A}{\pi}\frac{\omega}{4(x-x_0)^2+\omega^2}$",
+                     unicodeFuncStr="y = y\u2080 + (2A/\u03C0) \u00D7 (\u03C9/[4(x-x\u2080)\u00B2+\u03C9\u00B2])",
+                     rawParametersStr=[r'$y_0$',r'$A$',r'$x_0$',r'$\omega$'],
+                     unicodeParametersStr=['y\u2080','A','x\u2080','\u03C9']),
+
+            'Power':                
+            Function(name='Power',
+                     func=lambda x,A,b: A*(x)**b,
+                     numberOfParameters=2,
+                     rawFuncStr=r"$y = Ax^b$",
+                     unicodeFuncStr="y = A x\u1D47",
+                     rawParametersStr=[r'$A$',r'$b$'],
+                     unicodeParametersStr=['A','b']),
+
+            'Exponential growth':   
+            Function(name='Exponential growth',
+                     func=lambda x,y0,A,t: y0 + A*np.exp(x/t),
+                     numberOfParameters=3,
+                     rawFuncStr=r"$y = y_0 + A\/e^{x/t}$",
+                     unicodeFuncStr="y = y\u2080 + A e^(x/t)",
+                     rawParametersStr=[r'$y_0$',r'$A$',r'$t$'],
+                     unicodeParametersStr=['y\u2080','A','t']),
+
+            'Exponential decay':    
+            Function(name='Exponential decay',
+                     func=lambda x,y0,A,t: y0 + A*np.exp(-x/t),
+                     numberOfParameters=3,
+                     rawFuncStr=r"$y = y_0 + A\/e^{-x/t}$",
+                     unicodeFuncStr="y = y\u2080 + A e^(-x/t)",
+                     rawParametersStr=[r'$y_0$',r'$A$',r'$t$'],
+                     unicodeParametersStr=['y\u2080','A','t']),
+
+            'Logarithm':            
+            Function(name='Logarithm',
+                     func=lambda x,y0,A,x0: y0 + A*np.log(x-x0),
+                     numberOfParameters=3,
+                     rawFuncStr=r"$y = y_0 + A\/log(x-x_0)$",
+                     unicodeFuncStr="y = y\u2080 + A log(x-x\u2080)",
+                     rawParametersStr=[r'$y_0$',r'$A$',r'$x_0$'],
+                     unicodeParametersStr=['y\u2080','A','x\u2080'])
+            }
 
 ####################################################################################
 #                                  GLOBAL VARIABLES                                #
@@ -179,7 +307,7 @@ def calcChiSquared(params):
     global y_err
 
     #Returning chi-squared value for the given fitting function parameters
-    return np.sum( ((y-functions[function](x,*params))/y_err)**2 )
+    return np.sum( ((y-functions[function].func(x,*params))/y_err)**2 )
 
 '''
 This function calculates the final chi-squared as well as reduced chi-squared
@@ -595,7 +723,7 @@ def fitFunction(iniParameters):
             #Main optimization happens here
             #Note: curve_fit populates sigma with 1's as a default.
             #absolute_sigma = True is the flag that forces errors to not be used in a relative manner
-            fitStructure = opt.curve_fit(functions[function],x,y,absolute_sigma=True,p0=iniParameters,sigma=y_err)
+            fitStructure = opt.curve_fit(functions[function].func,x,y,absolute_sigma=True,p0=iniParameters,sigma=y_err)
 
     #Catching errors
     except RuntimeError as e:
@@ -654,7 +782,7 @@ def plotRawData(plotTitle,xTitle,yTitle,viewGrid):
         axes1.grid(b=True, which='minor', alpha=0.2)
 
     #Plotting the raw data
-    if(ERR==True):
+    if(ERR):
         axes1.errorbar(x,y,y_err,fmt='.',color='midnightblue',ecolor='royalblue',capsize=2)
     else:
         axes1.scatter(x,y,color='midnightblue', label='Data')
@@ -685,7 +813,7 @@ def plotFitData(plotTitle,xTitle,yTitle,viewGrid,viewParameters,viewResiduals):
     global y_err
     global ERR
     global numberOfDataPoints
-    global func
+    global function
     global numberOfParameters
     global fitParameters
     global fitErrors
@@ -729,19 +857,19 @@ def plotFitData(plotTitle,xTitle,yTitle,viewGrid,viewParameters,viewResiduals):
             axes3.grid(b=True, which='minor', alpha=0.2)
 
     #Plotting the raw data
-    if(ERR==True):
+    if(ERR):
         axes2.errorbar(x,y,y_err, fmt='.', color='midnightblue', ecolor='royalblue', capsize=2, zorder=1, label='Data')
     else:
         axes2.scatter(x,y,color='midnightblue', label='Data')
     
     #Plotting the best fit
     xx = np.linspace(min(x),max(x),1000)
-    yy = functions[function](xx,*fitParameters)
+    yy = functions[function].func(xx,*fitParameters)
     axes2.plot(xx,yy,color='darkorange', zorder=2, label='Fit function')
 
     #Plotting the residuals
     if(viewResiduals):
-        residuals = functions[function](x,*fitParameters) - y
+        residuals = functions[function].func(x,*fitParameters) - y
         axes3.axhline(0,color='darkorange', zorder=2)
         if(ERR==True):
             axes3.errorbar(x,residuals,y_err,fmt='.', color='midnightblue', ecolor='royalblue', capsize=2, zorder=1)
@@ -762,92 +890,14 @@ def plotFitData(plotTitle,xTitle,yTitle,viewGrid,viewParameters,viewResiduals):
 
         #Adding function type to parameters box
         parametersStr.append(r"$\bf{Function:}$")
-
-        if(function=='Constant'):
-
-            parametersStr.append(r"$y = a$")
-            listOfParams = [r'$a$']
-
-        elif(function=='Linear'):
-
-            parametersStr.append(r"$y = ax+b$")
-            listOfParams = [r'$a$',r'$b$']
-
-        elif(function=='Quadratic'):
-
-            parametersStr.append(r"$y = ax^2+bx+c$")
-            listOfParams = [r'$a$',r'$b$',r'$c$']
-
-        elif(function=='Cubic'):
-
-            parametersStr.append(r"$y = ax^3+bx^2+cx+d$")
-            listOfParams = [r'$a$',r'$b$',r'$c$',r'$d$']
-
-        elif(function=='Quartic'):
-
-            parametersStr.append(r"$y = ax^4+bx^3+cx^2+dx+e$")
-            listOfParams = [r'$a$',r'$b$',r'$c$',r'$d$',r'$e$']
-
-        elif(function=='Quintic'):
-
-            parametersStr.append(r"$y = ax^5+bx^4+cx^3+dx^2+ex+f$")
-            listOfParams = [r'$a$',r'$b$',r'$c$',r'$d$',r'$e$',r'$f$']
-
-        elif(function=='Sine wave'):
-
-            parametersStr.append(r'$y = y_0 + A[\sin(\omega x+\phi)]$')
-            listOfParams = [r'$y_0$',r'$A$',r'$\omega$',r'$\phi$']
-
-        elif(function=='Square wave'):
-
-            parametersStr.append(r'$y = y_0 + A\/sgn[\sin(\omega x+\phi)]$')
-            listOfParams = [r'$y_0$',r'$A$',r'$\omega$',r'$\phi$']
-
-        elif(function=='Gaussian'):
-
-            parametersStr.append(r'$y = y_0 + \frac{A}{\sigma \sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}}$')
-            listOfParams = [r'$y_0$',r'$A$',r'$\mu$',r'$\sigma$']
-
-        elif(function=='Poisson'):
-
-            parametersStr.append(r'$y = y_0 + A\/\frac{e^{-\lambda}\lambda^x}{x!}$')
-            listOfParams = [r'$y_0$',r'$A$',r'$\lambda$']
-
-        elif(function=='Laplacian'):
-
-            parametersStr.append(r'$y = y_0 + \frac{A}{2b}e^{-\frac{|x-\mu|}{b}}$')
-            listOfParams = [r'$y_0$',r'$A$',r'$\mu$',r'$b$']
-
-        elif(function=='Lorentzian'):
-
-            parametersStr.append(r'$y = y_0 + \frac{2A}{\pi}\frac{\omega}{4(x-x_0)^2+\omega^2}$')
-            listOfParams = [r'$y_0$',r'$A$',r'$x_0$',r'$\omega$']
-            
-        elif(function=='Power'):
-
-            parametersStr.append(r'$y = Ax^b$')
-            listOfParams = [r'$A$',r'$b$']
-
-        elif(function=='Exponential growth'):
-
-            parametersStr.append(r'$y = y_0 + A\/e^{x/t}$')
-            listOfParams = [r'$y_0$',r'$A$',r'$t$']
-
-        elif(function=='Exponential decay'):
-
-            parametersStr.append(r'$y = y_0 + A\/e^{-x/t}$')
-            listOfParams = [r'$y_0$',r'$A$',r'$t$']
-
-        elif(function=='Logarithm'):
-
-            parametersStr.append(r'$y = y_0 + A\/log(x-x_0)$')
-            listOfParams = [r'$y_0$',r'$A$',r'$x_0$']
+        parametersStr.append(functions[function].name)
+        parametersStr.append(functions[function].rawFuncStr)
 
         #Adding fit parameters to the parameters box
         parametersStr.append("")
         parametersStr.append(r"$\bf{Fitting\/parameters:}$")
         for i in range(numberOfParameters):
-            parametersStr.append(listOfParams[i]+r' = {0:.5e} $\pm$ {1:.5e}'.format(fitParameters[i],fitErrors[i]))
+            parametersStr.append(functions[function].rawParametersStr[i]+r' = {0:.5e} $\pm$ {1:.5e}'.format(fitParameters[i],fitErrors[i]))
 
         #Adding some additional fitting details to the parameters box
         parametersStr.append("")
@@ -859,7 +909,7 @@ def plotFitData(plotTitle,xTitle,yTitle,viewGrid,viewParameters,viewResiduals):
         parametersStr.append(r'Acceptable range of $\chi_r^2$ = ({0:.2f},{1:.2f})'.format(redChiSquaredLimits[0],redChiSquaredLimits[1]))
 
         #Adding an important note
-        if(ERR == False):
+        if(not ERR):
             parametersStr.append("")
             parametersStr.append(r'$\bf{Note}$: Errors and chi-squared estimates')
             parametersStr.append(r'here dont mean much since no errors')
