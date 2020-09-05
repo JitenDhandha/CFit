@@ -16,7 +16,6 @@ import Fitting as fit
 import tkinter as tk
 from tkinter import filedialog
 import tkinter.ttk as ttk
-from inspect import signature
 
 ####################################################################################
 #                                  USER INTERFACE                                  #
@@ -73,9 +72,8 @@ class GUI:
         self.fileStatus = tk.StringVar()    #String holding status of the file
  
         #Types of fits
-        self.fitTypes = ['Polynomial','Constant','Linear','Quadratic', 'Cubic','Quartic',
-            'Quintic','Other functions','Sine wave','Square wave','Gaussian','Poisson','Laplacian',
-            'Lorentzian','Power','Exponential growth','Exponential decay','Logarithm']       
+        functionsList = list(fit.functions.keys())
+        self.fitTypes = ['Polynomial'] + functionsList[0:6] + ['Other functions'] + functionsList[6:]   
         self.fitType = tk.StringVar()       #String holding the current type of fit chosen
 
         self.viewGrid = tk.IntVar()         #Boolean holding whether the user wants to see gridlines in plot
@@ -296,91 +294,16 @@ class GUI:
     '''
     def fitTypeOptionMenuFunc(self, event):
         
-        #Setting preview of the form of the function
-        if(self.fitType.get()=='Constant'):
-            self.fitTypeStr.set('y = a')
-            self.fitDataManEntry.delete(0,'end')
-            self.fitDataManEntry.insert(0, 'a=1')
-
-        elif(self.fitType.get()=='Linear'):
-            self.fitTypeStr.set('y = ax+b')
-            self.fitDataManEntry.delete(0,'end')
-            self.fitDataManEntry.insert(0, 'a=1, b=1')
-
-        elif(self.fitType.get()=='Quadratic'):
-            self.fitTypeStr.set('y = ax\u00B2+bx+c')
-            self.fitDataManEntry.delete(0,'end')
-            self.fitDataManEntry.insert(0, 'a=1, b=1, c=1')
-
-        elif(self.fitType.get()=='Cubic'):
-            self.fitTypeStr.set('y = ax\u00B3+bx\u00B2+cx+d')
-            self.fitDataManEntry.delete(0,'end')
-            self.fitDataManEntry.insert(0, 'a=1, b=1, c=1, d=1')
-
-        elif(self.fitType.get()=='Quartic'):
-            self.fitTypeStr.set('y = ax\u2074+bx\u00B3+cx\u00B2+dx+e')
-            self.fitDataManEntry.delete(0,'end')
-            self.fitDataManEntry.insert(0, 'a=1, b=1, c=1, d=1, e=1')
-
-        elif(self.fitType.get()=='Quintic'):
-            self.fitTypeStr.set('y = ax\u2075+bx\u2074+cx\u00B3+dx\u00B2+ex+f')
-            self.fitDataManEntry.delete(0,'end')
-            self.fitDataManEntry.insert(0, 'a=1, b=1, c=1, d=1, e=1, f=1')
-
-        elif(self.fitType.get()=='Sine wave'):
-            self.fitTypeStr.set('y = y\u2080 + A sin(\u03C9x+\u03D5)')
-            self.fitDataManEntry.delete(0,'end')
-            self.fitDataManEntry.insert(0, 'y\u2080=1, A=1, \u03C9=1, \u03D5=1')
-
-        elif(self.fitType.get()=='Square wave'):
-            self.fitTypeStr.set('y = y\u2080 + A signum[sin(\u03C9x+\u03D5)]')
-            self.fitDataManEntry.delete(0,'end')
-            self.fitDataManEntry.insert(0, 'y\u2080=1, A=1, \u03C9=1, \u03D5=1')
-
-        elif(self.fitType.get()=='Gaussian'):
-            self.fitTypeStr.set('y = y\u2080 + A/[\u03C3 \u221A(2\u03C0)] \u00D7 e^[(x-\u03BC)\u00B2/(2\u03C3\u00B2)]')
-            self.fitDataManEntry.delete(0,'end')
-            self.fitDataManEntry.insert(0, 'y\u2080=1, A=1, \u03BC=1, \u03C3=1')
-
-        elif(self.fitType.get()=='Poisson'):
-            self.fitTypeStr.set('y = y\u2080 + A [(e^\u03BB)(\u03BB^x)]/x!')
-            self.fitDataManEntry.delete(0,'end')
-            self.fitDataManEntry.insert(0, 'y\u2080=1, A=1, \u03BB=1')
-
-        elif(self.fitType.get()=='Laplacian'):
-            self.fitTypeStr.set('y = y\u2080 + A/(2b) \u00D7 e^(-|(x-\u03BC)|/b)')
-            self.fitDataManEntry.delete(0,'end')
-            self.fitDataManEntry.insert(0, 'y\u2080=1, A=1, \u03BC=1, b=1')
-
-        elif(self.fitType.get()=='Lorentzian'):
-            self.fitTypeStr.set('y = y\u2080 + (2A/\u03C0) \u00D7 (\u03C9/[4(x-x\u2080)\u00B2+\u03C9\u00B2])')
-            self.fitDataManEntry.delete(0,'end')
-            self.fitDataManEntry.insert(0, 'y\u2080=1, A=1, x\u2080=1, \u03C9=1')
-
-        elif(self.fitType.get()=='Power'):
-            self.fitTypeStr.set('y = A x\u1D47')
-            self.fitDataManEntry.delete(0,'end')
-            self.fitDataManEntry.insert(0, 'A=1, b=1')
-
-        elif(self.fitType.get()=='Exponential growth'):
-            self.fitTypeStr.set('y = y\u2080 + A e^(x/t)')
-            self.fitDataManEntry.delete(0,'end')
-            self.fitDataManEntry.insert(0, 'y\u2080=1, A=1, t=1')
-
-        elif(self.fitType.get()=='Exponential decay'):
-            self.fitTypeStr.set('y = y\u2080 + A e^(-x/t)')
-            self.fitDataManEntry.delete(0,'end')
-            self.fitDataManEntry.insert(0, 'y\u2080=1, A=1, t=1')
-
-        elif(self.fitType.get()=='Logarithm'):
-            self.fitTypeStr.set('y = y\u2080 + A log(x-x\u2080)')
-            self.fitDataManEntry.delete(0,'end')
-            self.fitDataManEntry.insert(0, 'y\u2080=1, A=1, x\u2080=1')
-
-        #Setting type of function
+        #Setting the function and its preview
         fit.function = self.fitType.get()
-        #Setting number of parameters
-        fit.numberOfParameters = len(signature(fit.functions[fit.function]).parameters)-1            
+        fit.numberOfParameters = fit.functions[fit.function].numberOfParameters
+        self.fitTypeStr.set(fit.functions[fit.function].unicodeFuncStr)
+        self.fitDataManEntry.delete(0,'end')
+        string = ''
+        for param in fit.functions[fit.function].unicodeParametersStr:
+            string += param + '=1, '
+        string = string[:-2]
+        self.fitDataManEntry.insert(0,string)
             
         #Placing the fitting buttons and setting fit status
         self.fitDataAutoButton.grid(row=1, rowspan=1, column=1, columnspan=1, sticky='NEWS', padx=5, pady=5)   
