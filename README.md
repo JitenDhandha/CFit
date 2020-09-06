@@ -12,7 +12,7 @@ CFit is a curve fitting tool in python, based on the method of least squares. It
 
 ## Interface
 
-<img src="https://user-images.githubusercontent.com/68048517/87061686-f63b6700-c203-11ea-995b-e4e5adf8e580.PNG" width="50%" height="50%">
+<img src="https://user-images.githubusercontent.com/68048517/92326951-a0960600-f05e-11ea-98f1-9a3fc009a36c.PNG" width="50%" height="50%">
 
 ## How to use it
 
