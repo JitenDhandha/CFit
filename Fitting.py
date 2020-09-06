@@ -44,7 +44,7 @@ Polynomial: constant, linear, quadratic, cubic, quartic, quintic
 Periodic functions: sine wave, square wave
 Peak shape functions: gaussian, poisson, laplace, lorentz
 Polynomial-based functions: power law
-Exponentials and logarithms: exponential growth, exponential decay, logarithm
+Exponentials and logarithms: exponential, logarithm
 '''
 
 #Dictonary to hold the functions
