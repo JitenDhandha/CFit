@@ -210,21 +210,17 @@ class GUI:
         #Relative sizes of each row and column
         self.frame5.grid_columnconfigure(0, weight=8)
         self.frame5.grid_columnconfigure(1, weight=1)
-        self.frame5.grid_columnconfigure(2, weight=1)
-        self.frame5.grid_columnconfigure(3, weight=8)
+        self.frame5.grid_columnconfigure(2, weight=8)
         self.frame5.grid_rowconfigure(0, weight=1)
 
         self.clearButton = tk.Button(self.frame5, text="Clear", width=10, command=self.clear)
         self.clearButton.grid(row=0, rowspan=1, column=0, columnspan=1, sticky='NES', padx=5, pady=5)    
         
-        self.exitButton = tk.Button(self.frame5, text="Exit", width=8, command=self.destroy)
-        self.exitButton.grid(row=0, rowspan=1, column=1, columnspan=1, sticky='NEWS', padx=5, pady=5)
-
         self.helpButton = tk.Button(self.frame5, text="Help", width=8, command=self.help)
-        self.helpButton.grid(row=0, rowspan=1, column=2, columnspan=1, sticky='NEWS', padx=5, pady=5)
+        self.helpButton.grid(row=0, rowspan=1, column=1, columnspan=1, sticky='NEWS', padx=5, pady=5)
 
         self.aboutButton = tk.Button(self.frame5, text="About", width=10, command=self.about)
-        self.aboutButton.grid(row=0, rowspan=1, column=3, columnspan=1, sticky='NWS', padx=5, pady=5)
+        self.aboutButton.grid(row=0, rowspan=1, column=2, columnspan=1, sticky='NWS', padx=5, pady=5)
 
     ############################################################################
     #                                FUNCTIONS                                 #
@@ -436,15 +432,8 @@ class GUI:
     '''
     def about(self):
 
-        self.aboutText = 'CFit (Curve fitting Tool)\n\u24EA 2020 Jiten Dhandha\nSchool Of Physics and Astronomy\nThe University of Manchester'
+        self.aboutText = 'CFit (Curve fitting Tool)\n\u24EA 2020 Jiten Dhandha\nSchool of Physics and Astronomy\nThe University of Manchester'
         tk.messagebox.showinfo('About', self.aboutText)
-
-    '''
-    This function exits the GUI.
-    '''
-    def destroy(self):
-        self.master.quit()
-        self.master.destroy()
 
 ####################################################################################
 #                                  MAIN FUNCTION                                   #
