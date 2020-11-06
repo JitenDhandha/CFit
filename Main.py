@@ -238,6 +238,10 @@ class GUI:
         lineNum = 0
         with open(self.fileLocation, 'r') as file:
             for line in file:
+                line = ' '.join(line.split())
+                print(line)
+                for delims in [(' ,',','),(', ',','),(' ',',')]:
+                    line = line.replace(*delims)
                 self.filePreviewListBox.insert(lineNum, line)
                 lineNum += 1
 
