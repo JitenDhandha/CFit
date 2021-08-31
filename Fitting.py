@@ -273,8 +273,8 @@ def readFile(fileLocation):
         ERR = False
     elif(len(data[0])==3):
         y_err = data[:,2]
-        ERR = True     
-    
+        ERR = True
+        
     #All ran correctly!
     return 0
         
@@ -343,13 +343,13 @@ global minimization of chi-squared using the scipy differential evolution algori
 Returns an integer denoting success (0) or failure (non 0) of the function.
 '''
 def guessParameters():
-
+    
     #Access to global variables
     global function
     global x
     global y
     global numberOfDataPoints
-
+    
     #Useful quantities for parameter estimation
     xmin = min(x)
     xmax = max(x)
@@ -401,6 +401,7 @@ def guessParameters():
         omg_bound = (0.5*(2*np.pi)*guess_f,2*(2*np.pi)*guess_f)
 
         BOUNDS = [y0_bound, A_bound, omg_bound, phi_bound]
+        BOUNDS = [np.sort(bound) for bound in BOUNDS]
 
         with warnings.catch_warnings():
             warnings.filterwarnings('ignore')
@@ -441,6 +442,7 @@ def guessParameters():
         omg_bound = (0.5*(2*np.pi)*guess_f,2*(2*np.pi)*guess_f)
 
         BOUNDS = [y0_bound, A_bound, omg_bound, phi_bound]
+        BOUNDS = [np.sort(bound) for bound in BOUNDS]
 
         with warnings.catch_warnings():
             warnings.filterwarnings('ignore')
@@ -457,10 +459,12 @@ def guessParameters():
         A_bound1 = (abs(y_range)/3,2*abs(y_range)*2.5*x_range)
         y0_bound1 = (ymin-y_range,ymin+y_range/2)
         BOUNDS1 = [y0_bound1, A_bound1, mu_bound, omg_bound]
+        BOUNDS1 = [np.sort(bound) for bound in BOUNDS1]
 
         A_bound2 = (-abs(y_range)/3,-2*abs(y_range)*2.5*x_range)
         y0_bound2 = (ymax-y_range/2,ymax+y_range)
         BOUNDS2 = [y0_bound2, A_bound2, mu_bound, omg_bound]
+        BOUNDS2 = [np.sort(bound) for bound in BOUNDS2]
 
         BOUNDS_LIST = [BOUNDS1,BOUNDS2]
 
@@ -484,10 +488,12 @@ def guessParameters():
         A_bound1 = (0,2*abs(y_range))
         y0_bound1 = (ymin-y_range,ymin+y_range/2)        
         BOUNDS1 = [y0_bound1, A_bound1, lmd_bound]
+        BOUNDS1 = [np.sort(bound) for bound in BOUNDS1]
 
         A_bound2 = (0,-2*abs(y_range))
         y0_bound2 = (ymax-y_range/2,ymax+y_range)
-        BOUNDS2 = [y0_bound1, A_bound1, lmd_bound]        
+        BOUNDS2 = [y0_bound1, A_bound1, lmd_bound]  
+        BOUNDS2 = [np.sort(bound) for bound in BOUNDS2]
 
         BOUNDS_LIST = [BOUNDS1,BOUNDS2]
 
@@ -512,10 +518,12 @@ def guessParameters():
         A_bound1 = (abs(y_range)/3,2*abs(y_range)*2*x_range)
         y0_bound1 = (ymin-y_range,ymin+y_range/2)
         BOUNDS1 = [y0_bound1, A_bound1, mu_bound, b_bound]
+        BOUNDS1 = [np.sort(bound) for bound in BOUNDS1]
 
         A_bound2 = (-abs(y_range)/3,-2*abs(y_range)*2*x_range)
         y0_bound2 = (ymax-y_range/2,ymax+y_range)
         BOUNDS2 = [y0_bound2, A_bound2, mu_bound, b_bound]
+        BOUNDS2 = [np.sort(bound) for bound in BOUNDS2]
 
         BOUNDS_LIST = [BOUNDS1,BOUNDS2]
 
@@ -540,10 +548,12 @@ def guessParameters():
         A_bound1 = (abs(y_range)/3,2*abs(y_range)*np.pi/2*x_range)
         y0_bound1 = (ymin-y_range,ymin+y_range/2)
         BOUNDS1 = [y0_bound1, A_bound1, x0_bound, omg_bound]
+        BOUNDS1 = [np.sort(bound) for bound in BOUNDS1]
 
         A_bound2 = (-abs(y_range)/3,-2*abs(y_range)*np.pi/2*x_range)
         y0_bound2 = (ymax-y_range/2,ymax+y_range)
         BOUNDS2 = [y0_bound2, A_bound2, x0_bound, omg_bound]
+        BOUNDS2 = [np.sort(bound) for bound in BOUNDS2]
 
         BOUNDS_LIST = [BOUNDS1,BOUNDS2]
 
@@ -570,6 +580,7 @@ def guessParameters():
         b_bound = (b_est-0.5*abs(b_est),b_est+0.5*abs(b_est))
 
         BOUNDS = [A_bound,b_bound]
+        BOUNDS = [np.sort(bound) for bound in BOUNDS]
 
         with warnings.catch_warnings():
             warnings.filterwarnings('ignore')
