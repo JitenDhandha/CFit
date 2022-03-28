@@ -3,10 +3,17 @@ CFit is a curve fitting tool in Python, based on the method of least squares. It
 
 <img src="https://github.com/JitenDhandha/CFit/blob/master/CFit.png" width="31.4%" height="31.4%">
 
+## Required libraries
+- numpy
+- matplotlib
+- scipy
+- tkinter
+- PyQt5 or PyQt6
+
 ## Installation
 - Click the drop down menu titled 'Code' at the top right of the window and select 'Download zip'.
 - Save this zip file wherever you want the curve fitting tool to be.
-- Unzip the contents of the zip file and run the file titled 'Main.py' on a Python IDE of your choice! Make sure you have numpy, scipy, matplotlib and tkinter packages installed on your version of Python.
+- Unzip the contents of the zip file and run the file titled 'Main.py' on a Python IDE of your choice!
 
 **Note**: The files 'Fitting.py' and 'Main.py' need to be in the same folder for it to work!
 
