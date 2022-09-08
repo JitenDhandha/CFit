@@ -32,6 +32,6 @@ CFit is a curve fitting tool in Python, based on the method of least squares. It
 
 ## Bugs and suggestions
 
-If you find any bugs, run into errors or have suggestions on functions you would like to see added, feel free to open a GitHub issue or email me directly at jitendhandha@gmail.com. I will be more than happy to take a look at it!
+If you find any bugs, run into errors or have suggestions on functions you would like to see added, feel free to open a GitHub issue or email me directly at jitendhandha[a]gmail[dot]com. I will be more than happy to take a look at it!
 
 ### Have fun plotting!
