@@ -12,8 +12,8 @@ import os
 from io import StringIO
 import numpy as np
 import pandas as pd
-import matplotlib as mpl
 import matplotlib.pyplot as plt
+from plotly import graph_objects as go
 from nicegui import ui
 from . import dataset, function, fitting
 
@@ -54,7 +54,6 @@ class GUI():
         try:
             self.data=None
             self.fit=None
-            self._reset_plot()
             with StringIO(e.content.read().decode()) as f:
                 self.data = dataset.Dataset(f)
             ui.notify(f'Uploaded {e.name} successfully!',type='positive')
@@ -136,46 +135,51 @@ class GUI():
                 on_click=lambda e: self._perform_fit(auto=False,ini_params=ini_params)
                 ).classes('w-full justify-center')
             
-    def _reset_plot(self):
-        with self.MAIN_plot:
-            plt.clf()
-            plt.grid(True)
-            plt.tight_layout()
-            
     def _update_axis(self):
-        with self.MAIN_plot:
-            plt.xlabel(self.XLABEL_input.value,fontsize=self.XLABEL_SIZE_slider.value)
-            plt.ylabel(self.YLABEL_input.value,fontsize=self.YLABEL_SIZE_slider.value)
-            plt.title(self.TITLE_input.value,fontsize=self.TITLE_SIZE_slider.value)
-            plt.grid(self.GRID_checkbox.value)
-            plt.tight_layout()
+        fig = self.MAIN_fig
+        xstr = self.XLABEL_input.value if self.XLABEL_input.value != '' else None
+        ystr = self.YLABEL_input.value if self.YLABEL_input.value != '' else None
+        tstr = self.TITLE_input.value if self.TITLE_input.value != '' else None
+        fig.update_layout(
+            title=dict(text=tstr,font_size=self.TITLE_SIZE_slider.value,x=0.5,y=0.98),
+            xaxis=dict(title=dict(text=xstr,font_size=self.XLABEL_SIZE_slider.value)),
+            yaxis=dict(title=dict(text=ystr,font_size=self.YLABEL_SIZE_slider.value)),
+            )
+        self.MAIN_fig.update_xaxes(showgrid=self.GRID_checkbox.value,
+                                   zeroline=self.GRID_checkbox.value)
+        self.MAIN_fig.update_yaxes(showgrid=self.GRID_checkbox.value,
+                                   zeroline=self.GRID_checkbox.value)
+        self.MAIN_fig_ui.update()
         
     def _update_plot(self):
-        with self.MAIN_plot:
-            plt.clf()
-            if(self.data is not None):
-                if(self.SCATTER_checkbox.value):
-                    plt.errorbar(self.data.x,self.data.y,
-                                yerr=self.data.y_err if self.ERROR_checkbox.value else None,
-                                color=self.SCATTER_color.value,
-                                capsize=2,
-                                marker='o',
-                                markersize=self.SCATTER_SIZE_slider.value,  
-                                linestyle='',
-                                zorder=0)
-            if(self.fit is not None):
-                if(self.LINE_checkbox.value):
-                    plt.plot(self.data.x,self.fit.function(self.data.x,*self.fit.fit_params),
-                            color=self.LINE_color.value,
-                            linewidth=self.LINE_WIDTH_slider.value,
-                            zorder=1)
-            self._update_axis()
+        fig = self.MAIN_fig
+        fig.data = []
+        if(self.data is not None):
+            if(self.SCATTER_checkbox.value):
+                fig.add_trace(
+                    go.Scatter(x=self.data.x,y=self.data.y,
+                        error_y=dict(type='data',array=self.data.y_err if self.ERROR_checkbox.value else None),
+                        mode='markers',
+                        marker=dict(color=self.SCATTER_color.value,size=self.SCATTER_SIZE_slider.value),
+                        name='Data')
+                    )
+        if(self.fit is not None):
+            if(self.LINE_checkbox.value):
+                fig.add_trace(
+                    go.Scatter(x=self.data.x,y=self.fit.function(self.data.x,*self.fit.fit_params),
+                        mode='lines',
+                        line=dict(color=self.LINE_color.value,width=self.LINE_WIDTH_slider.value),
+                        name='Best fit')
+                    )
+        self.MAIN_fig_ui.update()
             
     def _change_dark(self):
         self.dark_mode.value = not self.dark_mode.value
         with self.FN_STR_plot:
             plt.gcf().set_facecolor('black' if self.dark_mode.value else 'white')
             self._fn_str_plot_txt.set_color('white' if self.dark_mode.value else 'black')
+        self.MAIN_fig.layout.template = 'plotly_dark' if self.dark_mode.value else 'plotly_white'
+        self.MAIN_fig_ui.update()
             
     def _change_theme(self):
         clr = self.theme_colors
@@ -361,8 +365,15 @@ class GUI():
             #############################################
             with ui.card().classes('w-[49.8%]'):
                 with ui.column().classes('w-full items-center'):
-                    self.MAIN_plot = ui.pyplot(figsize=(7,4.525))
-                    self._reset_plot()
+                    self.MAIN_fig = go.Figure()
+                    self.MAIN_fig.layout.template = 'plotly_dark'
+                    self.MAIN_fig.update_layout(
+                        margin=dict(l=2,r=2,b=2,t=2),
+                        width=650,
+                        height=435,
+                        showlegend=False
+                        )
+                    self.MAIN_fig_ui = ui.plotly(self.MAIN_fig)
         
         ui.button('Clear all', on_click=self.clear_all).classes('w-full')
         
@@ -371,7 +382,6 @@ class GUI():
         self.UPLOAD_element.reset()
         self.FN_select.set_value(None)
         self.FIT_PARAMS_expansion.clear()
-        self._reset_plot()
         self.TITLE_input.set_value('')
         self.XLABEL_input.set_value('')
         self.YLABEL_input.set_value('')
@@ -383,3 +393,5 @@ class GUI():
         self.LINE_WIDTH_slider.set_value(1)
         self.LINE_color.set_value('#ff0000')
         self.GRID_checkbox.set_value(True)
+        self._update_plot()
+        self._update_axis()
