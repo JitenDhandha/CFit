@@ -15,8 +15,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 mpl.rcParams['text.usetex'] = True
 from nicegui import events, ui
-
-import fitting, function, dataset
+import dataset, function, fitting
 
 ####################################################################################
 #                                GLOBAL VARIABLES                                  #

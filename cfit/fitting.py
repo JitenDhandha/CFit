@@ -7,7 +7,7 @@ import numpy as np
 import scipy.optimize as opt
 import scipy.stats as stats
 
-from _guess_params import *
+from guess_params import *
 
 ####################################################################################
 #                                    CLASS: Fit                                    #
