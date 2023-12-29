@@ -9,11 +9,11 @@
 ####################################################################################
 
 from io import StringIO
+import shutil
 import numpy as np
 import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-mpl.rcParams['text.usetex'] = True
 from nicegui import events, ui
 import dataset, function, fitting
 
@@ -253,7 +253,7 @@ class GUI():
                     with self.FN_STR_plot:
                         plt.axis('off')
                         self._fn_str_plot_txt = plt.text(0.5, 0.5,'',
-                                                         fontsize=14,weight='bold',
+                                                         fontsize=12.4,weight='bold',
                                                          ha='center',va='center',
                                                          color='white')
                     # Auto fit button
