@@ -207,6 +207,10 @@ class GUI():
                 on_click=self._change_theme
                 ).props('round'
                 ).tooltip('Change theme')
+            ui.button(icon='code',
+                on_click=lambda: ui.open('https://github.com/JitenDhandha/CFit', new_tab=True)
+                ).props('round'
+                ).tooltip('GitHub')
         
         with ui.row().classes('w-full no-wrap'):
             
