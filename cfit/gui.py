@@ -338,7 +338,7 @@ class GUI():
                             on_change=self._update_plot
                             ).classes('w-full'
                             ).bind_enabled_from(self,'data')
-                    self.SCATTER_color = ui.color_input(label='Scatter color',value='#000000',
+                    self.SCATTER_color = ui.color_input(label='Scatter color',value='#ffffff',
                         on_change=self._update_plot
                         ).classes('w-[31%]'
                         ).bind_enabled_from(self,'data')
