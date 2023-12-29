@@ -7,7 +7,7 @@ CFit is a curve fitting tool in Python, based on the method of least squares. It
 ```
 import numpy as np
 import matplotlib.pyplot as plt
-import dataset, function, fitting
+from cfit import dataset, function, fitting
 
 # Load data
 data = dataset.Dataset('path/to/data.csv')

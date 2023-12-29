@@ -8,14 +8,14 @@
 #                                    LIBRARIES                                     #
 ####################################################################################
 
+import os
 from io import StringIO
-import shutil
 import numpy as np
 import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-from nicegui import events, ui
-import dataset, function, fitting
+from nicegui import ui
+from . import dataset, function, fitting
 
 ####################################################################################
 #                                GLOBAL VARIABLES                                  #
@@ -37,6 +37,9 @@ class GUI():
                              '#4c1d95','#581c87','#701a75','#831843','#881337']
         self.theme = ui.colors(primary=self.theme_colors[7])
         self.dark_mode = ui.dark_mode(True)
+        
+        #Run the GUI
+        self.run()
         
     def _reset_variables(self):
         self.data = None
@@ -185,7 +188,8 @@ class GUI():
         self.HEADER = ui.header(
             ).classes('w-full h-[11%] items-center justify-center content-center bg-primary')
         with self.HEADER.classes(''):
-            ui.image('./CFit.png').classes('w-[4.8%]')
+            ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            ui.image(f'{ROOT_DIR}/CFit.png').classes('w-[4.8%]')
             ui.label('Curve Fitting Tool v2.0'
                 ).classes('text-5xl'
                 ).style('font-family: Monaco')
@@ -361,8 +365,6 @@ class GUI():
                     self._reset_plot()
         
         ui.button('Clear all', on_click=self.clear_all).classes('w-full')
-
-        ui.run()
         
     def clear_all(self):
         self._reset_variables()
@@ -381,7 +383,3 @@ class GUI():
         self.LINE_WIDTH_slider.set_value(1)
         self.LINE_color.set_value('#ff0000')
         self.GRID_checkbox.set_value(True)
-        
-if __name__ in {"__main__", "__mp_main__"}:
-    gui = GUI()
-    gui.run()
