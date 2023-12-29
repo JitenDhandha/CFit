@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from nicegui import app, ui
 from cfit import gui
 
-@ui.page("/")
+@ui.page("/", title="CFit v2.0", favicon="./CFit.png")
 def init():
     gui.GUI()
     
