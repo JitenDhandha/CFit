@@ -165,8 +165,9 @@ class GUI():
                     )
         if(self.fit is not None):
             if(self.LINE_checkbox.value):
+                x = np.linspace(self.data.x[0],self.data.x[-1],250)
                 fig.add_trace(
-                    go.Scatter(x=self.data.x,y=self.fit.function(self.data.x,*self.fit.fit_params),
+                    go.Scatter(x=x,y=self.fit.function(x,*self.fit.fit_params),
                         mode='lines',
                         line=dict(color=self.LINE_color.value,width=self.LINE_WIDTH_slider.value),
                         name='Best fit')
