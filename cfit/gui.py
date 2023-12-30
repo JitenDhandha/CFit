@@ -131,9 +131,12 @@ class GUI():
                          value=1,
                          validation={'Non-numeric input': validate_param},
                          ).classes('w-full')
-            fit_button = ui.button('Fit',
-                on_click=lambda e: self._perform_fit(auto=False,ini_params=ini_params)
-                ).classes('w-full justify-center')
+            with ui.row().classes('w-full'):
+                fit_button = ui.button('Fit',
+                    on_click=lambda e: self._perform_fit(auto=False,ini_params=ini_params)
+                    ).classes('w-[47%]')
+                ui.button('Close', on_click=dialog.close
+                    ).classes('w-[47%]')
             
     def _update_axis(self):
         fig = self.MAIN_fig
@@ -146,9 +149,11 @@ class GUI():
             yaxis=dict(title=dict(text=ystr,font_size=self.YLABEL_SIZE_slider.value)),
             )
         self.MAIN_fig.update_xaxes(showgrid=self.GRID_checkbox.value,
-                                   zeroline=self.GRID_checkbox.value)
+                                   zeroline=self.GRID_checkbox.value,
+                                   type='log' if self.XLOG_checkbox.value else 'linear')
         self.MAIN_fig.update_yaxes(showgrid=self.GRID_checkbox.value,
-                                   zeroline=self.GRID_checkbox.value)
+                                   zeroline=self.GRID_checkbox.value,
+                                   type='log' if self.YLOG_checkbox.value else 'linear')
         self.MAIN_fig_ui.update()
         
     def _update_plot(self):
@@ -187,6 +192,30 @@ class GUI():
         idx = clr.index(self.theme._props['primary']) 
         self.theme = ui.colors(primary=clr[(idx+1)%len(clr)])
         pass
+    
+    def _show_info(self):
+        with ui.dialog() as dialog, ui.card():
+            dialog.open()
+            ui.label('About CFit').classes('text-xl')
+            ui.label('''
+            CFit (named after optimization algorithm 'scipy.curve_fit') is a curve fitting tool 
+            in Python, based on the method of least squares. It is equipped with some standard 
+            functions commonly used in physics, and plotting functionality, with a graphical 
+            user interface built using NiceGUI. It can be used out-of-the-box for simple datasets 
+            through its "smart" parameter guesses.
+            ''')
+            ui.label('''
+            It initially started as a passion project during the COVID-19 lockdown in 2020,
+            partly inspired by a similar, much more basic tool used at the University of 
+            Manchester called 'LSFR.py' (by Abie Marshall, 2016). It has since grown into a fully
+            fledged tool with a GUI, and I hope to continue to develop it if it finds use!
+            ''')
+            ui.label('''
+            The code is released under the CC0 1.0 Universal meaning it can be modified, adapted,
+            and distributed for private or commercial purposes without any attribution.
+            If you have any questions/suggestions, please feel free to contact me
+            (see GitHub).         
+            ''')
 
     def run(self):
         
@@ -211,6 +240,10 @@ class GUI():
                 on_click=lambda: ui.open('https://github.com/JitenDhandha/CFit', new_tab=True)
                 ).props('round'
                 ).tooltip('GitHub')
+            ui.button(icon='info',
+                on_click=lambda: self._show_info()
+                ).props('round'
+                ).tooltip('Show info')
         
         with ui.row().classes('w-full no-wrap'):
             
@@ -297,7 +330,7 @@ class GUI():
                 
                 with ui.row().classes('w-full items-center'):
                     
-                    self.TITLE_input = ui.input(label='Plot title',
+                    self.TITLE_input = ui.input(label='Title',
                         ).classes('w-[31%]')
                     with self.TITLE_input:
                         ui.button(on_click=self._update_axis, icon='send'
@@ -321,12 +354,12 @@ class GUI():
                             on_change=self._update_axis
                             ).classes('w-full')
                     with ui.column().classes('w-[31%]'):
-                        ui.label('X-Label size').classes('w-full')
+                        ui.label('X-axis label size').classes('w-full')
                         self.XLABEL_SIZE_slider = ui.slider(min=5, max=25,value=15,
                             on_change=self._update_axis
                             ).classes('w-full')
                     with ui.column().classes('w-[31%]'):
-                        ui.label('Y-Label size').classes('w-full')
+                        ui.label('Y-axis label size').classes('w-full')
                         self.YLABEL_SIZE_slider = ui.slider(min=5, max=25,value=15,
                             on_change=self._update_axis
                             ).classes('w-full')
@@ -364,6 +397,12 @@ class GUI():
                     self.GRID_checkbox = ui.checkbox('Show grid',value=True,
                         on_change=self._update_axis
                         ).classes('w-[31%]')
+                    self.XLOG_checkbox = ui.checkbox('X-axis log scale',value=False,
+                        on_change=self._update_axis
+                        ).classes('w-[31%]')
+                    self.YLOG_checkbox = ui.checkbox('Y-axis log scale',value=False,
+                        on_change=self._update_axis
+                        ).classes('w-[31%]')
             
             #############################################
             #                Main plot card             #
@@ -378,6 +417,8 @@ class GUI():
                         height=435,
                         showlegend=False
                         )
+                    self.MAIN_fig.update_xaxes(exponentformat = 'E')
+                    self.MAIN_fig.update_yaxes(exponentformat = 'E')
                     self.MAIN_fig_ui = ui.plotly(self.MAIN_fig)
         
         ui.button('Clear all', on_click=self.clear_all).classes('w-full')
@@ -398,5 +439,7 @@ class GUI():
         self.LINE_WIDTH_slider.set_value(1)
         self.LINE_color.set_value('#ff0000')
         self.GRID_checkbox.set_value(True)
+        self.XLOG_checkbox.set_value(False)
+        self.YLOG_checkbox.set_value(False)
         self._update_plot()
         self._update_axis()

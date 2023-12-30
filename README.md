@@ -1,5 +1,5 @@
 # CFit
-CFit is a curve fitting tool in Python, based on the method of least squares. It is equipped with some standard functions, and can be used out-of-the-box for simple datasets through its "smart" parameter guesses. Try it for yourself at [CFit v2.0](https://cfit.onrender.com/)!
+CFit (named after optimization algorithm 'scipy.curve_fit') is a curve fitting tool in Python, based on the method of least squares. It is equipped with some standard functions commonly used in physics, and plotting functionality, with a graphical user interface built using NiceGUI. It can be used out-of-the-box for simple datasets through its "smart" parameter guesses. Try it for yourself at [CFit v2.0](https://cfit.onrender.com/)!
 
 <img src="https://github.com/JitenDhandha/CFit/blob/master/CFit.png" width="31.4%" height="31.4%">
 
