@@ -434,7 +434,7 @@ class GUI():
         self.SCATTER_checkbox.set_value(True)
         self.ERROR_checkbox.set_value(True)
         self.SCATTER_SIZE_slider.set_value(1)
-        self.SCATTER_color.set_value('#000000')
+        self.SCATTER_color.set_value('#ffffff')
         self.LINE_checkbox.set_value(True)
         self.LINE_WIDTH_slider.set_value(1)
         self.LINE_color.set_value('#ff0000')
