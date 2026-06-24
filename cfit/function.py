@@ -98,7 +98,7 @@ functions_dict = {
         'Poisson': 
         Function(name='Poisson',
              func=lambda x,y0,A,lamda: y0 + A*(np.exp(-lamda))*(lamda**x)/sp.gamma(x),
-             string=r"$y = y_0 + A\/\frac{e^{-\lambda}\lambda^x}{x!}$",
+             string=r"$y = y_0 + A\frac{e^{-\lambda}\lambda^x}{x!}$",
             ),
 
         'Laplacian':        
@@ -122,7 +122,7 @@ functions_dict = {
         'Exponential':    
         Function(name='Exponential',
              func=lambda x,y0,A,b: y0 + A*np.exp(b*x),
-             string=r"$y = y_0 + A\/e^{bx}$",
+             string=r"$y = y_0 + Ae^{bx}$",
             ),
         
         'Logarithm':        
